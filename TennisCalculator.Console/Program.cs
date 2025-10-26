@@ -3,120 +3,104 @@ using TennisCalculator.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using TennisCalculator.Console.Ioc;
 
-namespace TennisCalculator.Console;
+try
+{
+    // Validate command-line arguments
+    var validationResult = ValidateArguments(args);
+    if (validationResult != 0)
+    {
+        return validationResult;
+    }
+
+    var filePath = args[0];
+
+    // Validate file existence
+    if (!File.Exists(filePath))
+    {
+        System.Console.WriteLine($"Error: Tournament file '{filePath}' not found");
+        return 1;
+    }
+
+    // Configure dependency injection
+    var serviceProvider = ConsoleBindings.ConfigureServices();
+    
+    // Load tournament data
+    var tournamentProcessor = serviceProvider.GetRequiredService<ITournamentProcessor>();
+    try
+    {
+        await tournamentProcessor.ProcessTournamentDataAsync(filePath);
+    }
+    catch (Exception ex)
+    {
+        System.Console.WriteLine($"Error loading tournament data: {ex.Message}");
+        return 1;
+    }
+
+    // Start interactive mode
+    var commandLineInterface = serviceProvider.GetRequiredService<ICommandLineInterface>();
+    commandLineInterface.StartInteractiveMode();
+
+    return 0;
+}
+catch (FileProcessingException ex)
+{
+    System.Console.WriteLine($"File processing error: {ex.Message}");
+    if (ex.LineNumber.HasValue)
+    {
+        System.Console.WriteLine($"At line {ex.LineNumber.Value} in file '{ex.FilePath}'");
+    }
+    return 1;
+}
+catch (UnsupportedDataSourceException ex)
+{
+    System.Console.WriteLine($"Unsupported data source: {ex.Message}");
+    System.Console.WriteLine($"Source: {ex.DataSource}");
+    return 1;
+}
+catch (QueryProcessingException ex)
+{
+    System.Console.WriteLine($"Query processing error: {ex.Message}");
+    System.Console.WriteLine($"Query: {ex.Query}");
+    return 1;
+}
+catch (TennisCalculatorException ex)
+{
+    System.Console.WriteLine($"Tennis Calculator error: {ex.Message}");
+    return 1;
+}
+catch (Exception ex)
+{
+    System.Console.WriteLine($"Unexpected error: {ex.Message}");
+    return 1;
+}
 
 /// <summary>
-/// Main program entry point for the Tennis Calculator console application
+/// Validates command-line arguments
 /// </summary>
-public class Program
+/// <param name="args">Command-line arguments</param>
+/// <returns>0 if valid, error code otherwise</returns>
+static int ValidateArguments(string[] args)
 {
-    /// <summary>
-    /// Main entry point for the application
-    /// </summary>
-    /// <param name="args">Command-line arguments - expects tournament file path</param>
-    /// <returns>Exit code: 0 for success, 1 for error</returns>
-    public static async Task<int> Main(string[] args)
+    if (args.Length == 0)
     {
-        try
-        {
-            // Validate command-line arguments
-            var validationResult = ValidateArguments(args);
-            if (validationResult != 0)
-            {
-                return validationResult;
-            }
-
-            var filePath = args[0];
-
-            // Validate file existence
-            if (!File.Exists(filePath))
-            {
-                System.Console.WriteLine($"Error: Tournament file '{filePath}' not found");
-                return 1;
-            }
-
-            // Configure dependency injection
-            var serviceProvider = ConsoleBindings.ConfigureServices();
-            
-            // Load tournament data
-            var tournamentProcessor = serviceProvider.GetRequiredService<ITournamentProcessor>();
-            try
-            {
-                await tournamentProcessor.ProcessTournamentDataAsync(filePath);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"Error loading tournament data: {ex.Message}");
-                return 1;
-            }
-
-            // Start interactive mode
-            var commandLineInterface = serviceProvider.GetRequiredService<ICommandLineInterface>();
-            commandLineInterface.StartInteractiveMode();
-
-            return 0;
-        }
-        catch (FileProcessingException ex)
-        {
-            System.Console.WriteLine($"File processing error: {ex.Message}");
-            if (ex.LineNumber.HasValue)
-            {
-                System.Console.WriteLine($"At line {ex.LineNumber.Value} in file '{ex.FilePath}'");
-            }
-            return 1;
-        }
-        catch (UnsupportedDataSourceException ex)
-        {
-            System.Console.WriteLine($"Unsupported data source: {ex.Message}");
-            System.Console.WriteLine($"Source: {ex.DataSource}");
-            return 1;
-        }
-        catch (QueryProcessingException ex)
-        {
-            System.Console.WriteLine($"Query processing error: {ex.Message}");
-            System.Console.WriteLine($"Query: {ex.Query}");
-            return 1;
-        }
-        catch (TennisCalculatorException ex)
-        {
-            System.Console.WriteLine($"Tennis Calculator error: {ex.Message}");
-            return 1;
-        }
-        catch (Exception ex)
-        {
-            System.Console.WriteLine($"Unexpected error: {ex.Message}");
-            return 1;
-        }
+        System.Console.WriteLine("Error: Please provide a tournament file path");
+        System.Console.WriteLine("Usage: TennisCalculator.Console <tournament-file-path>");
+        return 1;
     }
 
-    /// <summary>
-    /// Validates command-line arguments
-    /// </summary>
-    /// <param name="args">Command-line arguments</param>
-    /// <returns>0 if valid, error code otherwise</returns>
-    private static int ValidateArguments(string[] args)
+    if (args.Length > 1)
     {
-        if (args.Length == 0)
-        {
-            System.Console.WriteLine("Error: Please provide a tournament file path");
-            System.Console.WriteLine("Usage: TennisCalculator.Console <tournament-file-path>");
-            return 1;
-        }
-
-        if (args.Length > 1)
-        {
-            System.Console.WriteLine("Error: Too many arguments provided");
-            System.Console.WriteLine("Usage: TennisCalculator.Console <tournament-file-path>");
-            return 1;
-        }
-
-        var filePath = args[0];
-        if (string.IsNullOrWhiteSpace(filePath))
-        {
-            System.Console.WriteLine("Error: Tournament file path cannot be empty");
-            return 1;
-        }
-
-        return 0;
+        System.Console.WriteLine("Error: Too many arguments provided");
+        System.Console.WriteLine("Usage: TennisCalculator.Console <tournament-file-path>");
+        return 1;
     }
+
+    var filePath = args[0];
+    if (string.IsNullOrWhiteSpace(filePath))
+    {
+        System.Console.WriteLine("Error: Tournament file path cannot be empty");
+        return 1;
+    }
+
+    return 0;
 }
