@@ -1,26 +1,19 @@
 using TennisCalculator.GamePlay;
 using TennisCalculator.Domain;
 
-namespace TennisCalculator;
+namespace TennisCalculator.Console;
 
 /// <summary>
 /// Handles interactive command-line interface for processing user queries
 /// </summary>
-public class CommandLineInterface
+public class CommandLineInterface(
+    IScoreMatchQueryHandler scoreMatchQueryHandler,
+    IGamesPlayerQueryHandler gamesPlayerQueryHandler,
+    IQueryParser queryParser) : ICommandLineInterface
 {
-    private readonly ScoreMatchQueryHandler _scoreMatchQueryHandler;
-    private readonly GamesPlayerQueryHandler _gamesPlayerQueryHandler;
-    private readonly QueryParser _queryParser;
-
-    public CommandLineInterface(
-        ScoreMatchQueryHandler scoreMatchQueryHandler,
-        GamesPlayerQueryHandler gamesPlayerQueryHandler,
-        QueryParser queryParser)
-    {
-        _scoreMatchQueryHandler = scoreMatchQueryHandler ?? throw new ArgumentNullException(nameof(scoreMatchQueryHandler));
-        _gamesPlayerQueryHandler = gamesPlayerQueryHandler ?? throw new ArgumentNullException(nameof(gamesPlayerQueryHandler));
-        _queryParser = queryParser ?? throw new ArgumentNullException(nameof(queryParser));
-    }
+    private readonly IScoreMatchQueryHandler _scoreMatchQueryHandler = scoreMatchQueryHandler ?? throw new ArgumentNullException(nameof(scoreMatchQueryHandler));
+    private readonly IGamesPlayerQueryHandler _gamesPlayerQueryHandler = gamesPlayerQueryHandler ?? throw new ArgumentNullException(nameof(gamesPlayerQueryHandler));
+    private readonly IQueryParser _queryParser = queryParser ?? throw new ArgumentNullException(nameof(queryParser));
 
     /// <summary>
     /// Starts the interactive mode, reading commands from standard input
@@ -28,7 +21,7 @@ public class CommandLineInterface
     public void StartInteractiveMode()
     {
         // Check if input is redirected (piped)
-        if (Console.IsInputRedirected)
+        if (System.Console.IsInputRedirected)
         {
             ProcessRedirectedInput();
         }
@@ -44,7 +37,7 @@ public class CommandLineInterface
     private void ProcessRedirectedInput()
     {
         string? input;
-        while ((input = Console.ReadLine()) != null)
+        while ((input = System.Console.ReadLine()) != null)
         {
             if (string.IsNullOrWhiteSpace(input))
                 continue;
@@ -61,8 +54,8 @@ public class CommandLineInterface
     {
         while (true)
         {
-            Console.Write("> ");
-            var input = Console.ReadLine();
+            System.Console.Write("> ");
+            var input = System.Console.ReadLine();
 
             if (input == null)
                 break;
@@ -84,9 +77,6 @@ public class CommandLineInterface
     {
         try
         {
-            // Debug: Show what input we received
-            Console.WriteLine($"DEBUG: Received input: '{input}' (length: {input.Length})");
-            
             var query = _queryParser.ParseQuery(input);
 
             if (query is QuitQuery)
@@ -101,23 +91,23 @@ public class CommandLineInterface
                 _ => "Error: Unrecognised command"
             };
 
-            Console.WriteLine(result);
+            System.Console.WriteLine(result);
             return false;
         }
         catch (InvalidQueryException ex)
         {
-            Console.WriteLine(ex.Message);
+            System.Console.WriteLine(ex.Message);
             DisplayHelp();
             return false;
         }
         catch (QueryProcessingException ex)
         {
-            Console.WriteLine($"Query processing error: {ex.Message}");
+            System.Console.WriteLine($"Query processing error: {ex.Message}");
             return false;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Unexpected error: {ex.Message}");
+            System.Console.WriteLine($"Unexpected error: {ex.Message}");
             return false;
         }
     }
@@ -127,10 +117,10 @@ public class CommandLineInterface
     /// </summary>
     private void DisplayHelp()
     {
-        Console.WriteLine("Available commands:");
-        Console.WriteLine("  Score Match <id>        - Get match result");
-        Console.WriteLine("  Games Player <name>     - Get player statistics");
-        Console.WriteLine("  quit                    - Exit application");
-        Console.WriteLine("Please try again.");
+        System.Console.WriteLine("Available commands:");
+        System.Console.WriteLine("  Score Match <id>        - Get match result");
+        System.Console.WriteLine("  Games Player <name>     - Get player statistics");
+        System.Console.WriteLine("  quit                    - Exit application");
+        System.Console.WriteLine("Please try again.");
     }
 }

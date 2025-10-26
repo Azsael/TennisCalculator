@@ -1,5 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -8,7 +9,9 @@
     <WarningsNotAsErrors>612,618,CS9042</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TennisCalculator.GamePlay\TennisCalculator.GamePlay.csproj" />
+    <ProjectReference Include="..\TennisCalculator.DataAccess\TennisCalculator.DataAccess.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-    <ProjectReference Include="..\TennisCalculator.Domain\TennisCalculator.Domain.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
   </ItemGroup>
 </Project>

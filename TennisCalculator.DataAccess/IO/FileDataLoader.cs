@@ -1,6 +1,7 @@
+using TennisCalculator.DataAccess.IO;
 using TennisCalculator.Domain;
 
-namespace TennisCalculator.DataAccess;
+namespace TennisCalculator.DataAccess.IO;
 
 /// <summary>
 /// Data loader implementation for file-based tournament data

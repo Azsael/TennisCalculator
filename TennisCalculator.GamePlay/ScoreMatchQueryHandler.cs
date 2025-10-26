@@ -6,14 +6,10 @@ namespace TennisCalculator.GamePlay;
 /// <summary>
 /// Handles queries for match scores and results
 /// </summary>
-public class ScoreMatchQueryHandler : IQueryHandler<ScoreMatchQuery, string>
+public class ScoreMatchQueryHandler(IMatchRepository matchRepository) : IScoreMatchQueryHandler
 {
-    private readonly IMatchRepository _matchRepository;
+    private readonly IMatchRepository _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
 
-    public ScoreMatchQueryHandler(IMatchRepository matchRepository)
-    {
-        _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
-    }
 
     /// <summary>
     /// Handles a score match query and returns formatted match result

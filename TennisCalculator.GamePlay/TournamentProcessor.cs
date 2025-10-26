@@ -6,27 +6,18 @@ namespace TennisCalculator.GamePlay;
 /// <summary>
 /// Service that orchestrates data loading and match creation
 /// </summary>
-public class TournamentProcessor
+public class TournamentProcessor(
+    IEnumerable<IDataLoader> dataLoaders,
+    IMatchRepository matchRepository,
+    IGameScorer gameScorer,
+    ISetScorer setScorer,
+    IMatchScorer matchScorer) : ITournamentProcessor
 {
-    private readonly IEnumerable<IDataLoader> _dataLoaders;
-    private readonly IMatchRepository _matchRepository;
-    private readonly IGameScorer _gameScorer;
-    private readonly ISetScorer _setScorer;
-    private readonly IMatchScorer _matchScorer;
-    
-    public TournamentProcessor(
-        IEnumerable<IDataLoader> dataLoaders,
-        IMatchRepository matchRepository,
-        IGameScorer gameScorer,
-        ISetScorer setScorer,
-        IMatchScorer matchScorer)
-    {
-        _dataLoaders = dataLoaders ?? throw new ArgumentNullException(nameof(dataLoaders));
-        _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
-        _gameScorer = gameScorer ?? throw new ArgumentNullException(nameof(gameScorer));
-        _setScorer = setScorer ?? throw new ArgumentNullException(nameof(setScorer));
-        _matchScorer = matchScorer ?? throw new ArgumentNullException(nameof(matchScorer));
-    }
+    private readonly IEnumerable<IDataLoader> _dataLoaders = dataLoaders ?? throw new ArgumentNullException(nameof(dataLoaders));
+    private readonly IMatchRepository _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
+    private readonly IGameScorer _gameScorer = gameScorer ?? throw new ArgumentNullException(nameof(gameScorer));
+    private readonly ISetScorer _setScorer = setScorer ?? throw new ArgumentNullException(nameof(setScorer));
+    private readonly IMatchScorer _matchScorer = matchScorer ?? throw new ArgumentNullException(nameof(matchScorer));
     
     /// <summary>
     /// Processes tournament data from the specified source

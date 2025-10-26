@@ -1,4 +1,4 @@
-namespace TennisCalculator.DataAccess;
+namespace TennisCalculator.DataAccess.IO;
 
 /// <summary>
 /// Interface for parsing tournament files into raw match data

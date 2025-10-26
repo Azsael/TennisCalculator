@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
+using TennisCalculator.DataAccess.IO;
 using TennisCalculator.Domain;
 
-namespace TennisCalculator.DataAccess;
+namespace TennisCalculator.DataAccess.IO;
 
 /// <summary>
 /// Parser for tournament files that processes match data line by line

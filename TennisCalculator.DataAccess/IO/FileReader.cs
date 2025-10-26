@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace TennisCalculator.DataAccess;
+namespace TennisCalculator.DataAccess.IO;
 
 /// <summary>
 /// File reader implementation that provides streaming file access
