@@ -1,31 +1,24 @@
-# Implementation Plan
+# Implementation Plan - Refactoring Phase
 
-- [x] 1. Set up project structure with separate library projects
-  - Create C# .NET console application project with latest .NET version
-  - Create TennisCalculator.Domain class library project
-  - Create TennisCalculator.GamePlay class library project  
-  - Create TennisCalculator.DataAccess class library project
-  - Add project references: Console → GamePlay → Domain, Console → DataAccess → Domain
-  - Create TennisPoint enum with Love, Fifteen, Thirty, Forty, Advantage values in Domain project
-  - Implement TennisPlayer record with case-insensitive equality in Domain project
+This implementation plan covers the architectural refactoring to eliminate the GamePlay library and improve separation of concerns.
+
+- [x] 1. Complete initial project structure setup (COMPLETED)
+  - C# .NET console application project with latest .NET version
+  - TennisCalculator.Domain class library project
+  - TennisCalculator.DataAccess class library project (to be renamed to Processing)
+  - TennisCalculator.GamePlay class library project (to be eliminated)
+  - TennisPoint enum and TennisPlayer record in Domain project
   - _Requirements: 1.2, 1.3, 1.4_
 
-- [x] 2. Implement core tennis domain entities in Domain project
-  - Create TennisGame record with Players, PointHistory, CurrentScore, and Winner properties
-  - Create TennisSet record with Players, Games, CurrentGame, and Winner properties
-  - Create TennisMatch record with MatchId, Players, Sets, CurrentSet, and Winner properties
-  - Add HasWinner computed properties to all entities
-  - Create TennisPlayerStatistics record with GamesWon, GamesLost, GamesInProgress properties
+- [x] 2. Core tennis domain entities (COMPLETED)
+  - TennisGame, TennisSet, TennisMatch records in Domain project
+  - TennisPlayerStatistics record with computed properties
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [x] 3. Create scoring strategy interfaces and implementations in GamePlay project
-  - Define IGameScorer interface with AddPoint, DetermineGameWinner, and CalculateCurrentScore methods
-  - Define ISetScorer interface with AddGame, DetermineSetWinner, and StartNewGame methods
-  - Define IMatchScorer interface with AddSet, DetermineMatchWinner, and StartNewSet methods
-  - Implement StandardGameScorer with tennis scoring rules (0, 15, 30, 40, deuce, advantage)
-  - Implement StandardSetScorer with first-to-6-games rule
-  - Implement StandardMatchScorer with best-of-3-sets rule
-  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 4.1, 4.2_
+- [x] 3. Move scoring interfaces from GamePlay to DataAccess (PARTIALLY COMPLETED)
+  - IGameScorer, ISetScorer, IMatchScorer interfaces moved to DataAccess/Scoring
+  - StandardGameScorer, StandardSetScorer, StandardMatchScorer implementations moved
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 4.1, 4.2, 9.3_
 
 - [x] 4. Implement data loading infrastructure in DataAccess project
   - Create IFileReader interface with async ReadLinesAsync and FileExistsAsync methods
@@ -81,10 +74,52 @@
   - Test file parsing with sample tournament data
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5_
   
-- [x] 11. Add integration tests with sample data
-  - Create integration test project for end-to-end testing
+- [x] 11. Integration tests (COMPLETED)
+  - Integration test project for end-to-end testing
   - Test complete application flow with full_tournament.txt file
-  - Verify expected query results match README sample output
-  - Test error scenarios with malformed tournament files
-  - Test interactive command processing with various input combinations
   - _Requirements: 5.1, 5.2, 5.3, 5.5, 6.1, 6.2, 6.3, 6.5, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
+
+- [ ] 12. Rename TennisCalculator.DataAccess to TennisCalculator.Processing
+
+
+
+
+
+  - Rename the TennisCalculator.DataAccess project folder to TennisCalculator.Processing
+  - Update the .csproj file name from TennisCalculator.DataAccess.csproj to TennisCalculator.Processing.csproj
+  - Update the project namespace declarations in all files within the project
+  - Update all project references in other projects to reference TennisCalculator.Processing
+  - Update using statements in all consuming projects to use TennisCalculator.Processing namespaces
+  - _Requirements: 9.1, 9.2, 9.6, 9.7_
+
+- [ ] 13. Move query handlers from GamePlay to Console project
+  - Move IQueryHandler, IScoreMatchQueryHandler, IGamesPlayerQueryHandler interfaces to Console/Commands
+  - Move ScoreMatchQuery, ScoreMatchQueryHandler classes to Console/Commands
+  - Move GamesPlayerQuery, GamesPlayerQueryHandler classes to Console/Commands
+  - Update CommandLineProcessor to use local query handler interfaces instead of GamePlay references
+  - Update dependency injection configuration to register query handlers in Console project
+  - _Requirements: 9.4, 9.5, 9.8_
+
+- [ ] 14. Update project references and eliminate GamePlay library
+  - Remove TennisCalculator.GamePlay project reference from Console project
+  - Remove TennisCalculator.GamePlay project from solution
+  - Delete TennisCalculator.GamePlay project folder and all its contents
+  - Update Console project to reference TennisCalculator.Processing directly
+  - Verify all project references are correctly updated
+  - _Requirements: 9.5, 9.6_
+
+- [ ] 15. Update comments, documentation, and naming consistency
+  - Review all code comments and XML documentation for outdated references to DataAccess or GamePlay
+  - Update interface and class documentation to reflect new architecture
+  - Ensure consistent naming conventions across all projects
+  - Update README.md to reflect new project structure
+  - Update any remaining references to old library names in error messages or logs
+  - _Requirements: 9.7, 9.8_
+
+- [ ] 16. Expand QueryParser to CommandProcessor functionality
+  - Rename IQueryParser to ICommandParser to better reflect its purpose
+  - Rename QueryParser class to CommandParser
+  - Update method names and documentation to use "command" terminology instead of "query"
+  - Enhance command parsing to support future extensibility
+  - Update all references to use the new command-focused naming
+  - _Requirements: 9.8_

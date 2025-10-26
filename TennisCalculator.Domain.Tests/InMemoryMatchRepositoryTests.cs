@@ -1,7 +1,8 @@
+using FluentAssertions;
 using TennisCalculator.Domain;
 using TennisCalculator.Domain.DataAccess;
 
-namespace TennisCalculator.DataAccess.Tests;
+namespace TennisCalculator.Domain.Tests;
 
 public class InMemoryMatchRepositoryTests
 {
@@ -32,17 +33,18 @@ public class InMemoryMatchRepositoryTests
 
         // Assert
         var retrievedMatch = _repository.GetMatch("01");
-        Assert.NotNull(retrievedMatch);
-        Assert.Equal("01", retrievedMatch.MatchId);
-        Assert.Equal(_player1, retrievedMatch.Players[0]);
-        Assert.Equal(_player2, retrievedMatch.Players[1]);
+        retrievedMatch.Should().NotBeNull();
+        retrievedMatch!.MatchId.Should().Be("01");
+        retrievedMatch.Players[0].Should().Be(_player1);
+        retrievedMatch.Players[1].Should().Be(_player2);
     }
 
     [Fact]
     public void AddMatch_NullMatch_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => _repository.AddMatch(null!));
+        _repository.Invoking(r => r.AddMatch(null!))
+            .Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -58,8 +60,8 @@ public class InMemoryMatchRepositoryTests
 
         // Assert
         var retrievedMatch = _repository.GetMatch("01");
-        Assert.NotNull(retrievedMatch);
-        Assert.Equal(_player1, retrievedMatch.Winner);
+        retrievedMatch.Should().NotBeNull();
+        retrievedMatch!.Winner.Should().Be(_player1);
     }
 
     [Fact]
@@ -72,8 +74,8 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetMatch("01");
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("01", result.MatchId);
+        result.Should().NotBeNull();
+        result!.MatchId.Should().Be("01");
     }
 
     [Fact]
@@ -83,28 +85,31 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetMatch("99");
 
         // Assert
-        Assert.Null(result);
+        result.Should().BeNull();
     }
 
     [Fact]
     public void GetMatch_NullMatchId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => _repository.GetMatch(null!));
+        _repository.Invoking(r => r.GetMatch(null!))
+            .Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
     public void GetMatch_EmptyMatchId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _repository.GetMatch(""));
+        _repository.Invoking(r => r.GetMatch(""))
+            .Should().Throw<ArgumentException>();
     }
 
     [Fact]
     public void GetMatch_WhitespaceMatchId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _repository.GetMatch("   "));
+        _repository.Invoking(r => r.GetMatch("   "))
+            .Should().Throw<ArgumentException>();
     }
 
     [Fact]
@@ -114,7 +119,7 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetAllMatches();
 
         // Assert
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -129,9 +134,9 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetAllMatches().ToList();
 
         // Assert
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, m => m.MatchId == "01");
-        Assert.Contains(result, m => m.MatchId == "02");
+        result.Should().HaveCount(2);
+        result.Should().Contain(m => m.MatchId == "01");
+        result.Should().Contain(m => m.MatchId == "02");
     }
 
     [Fact]
@@ -160,9 +165,9 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetMatchesForPlayer("Player 1").ToList();
 
         // Assert
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, m => m.MatchId == "01");
-        Assert.Contains(result, m => m.MatchId == "02");
+        result.Should().HaveCount(2);
+        result.Should().Contain(m => m.MatchId == "01");
+        result.Should().Contain(m => m.MatchId == "02");
     }
 
     [Fact]
@@ -175,8 +180,8 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetMatchesForPlayer("player 1").ToList();
 
         // Assert
-        Assert.Single(result);
-        Assert.Equal("01", result[0].MatchId);
+        result.Should().ContainSingle();
+        result[0].MatchId.Should().Be("01");
     }
 
     [Fact]
@@ -189,27 +194,30 @@ public class InMemoryMatchRepositoryTests
         var result = _repository.GetMatchesForPlayer("Unknown Player");
 
         // Assert
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
     public void GetMatchesForPlayer_NullPlayerName_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => _repository.GetMatchesForPlayer(null!));
+        _repository.Invoking(r => r.GetMatchesForPlayer(null!))
+            .Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
     public void GetMatchesForPlayer_EmptyPlayerName_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _repository.GetMatchesForPlayer(""));
+        _repository.Invoking(r => r.GetMatchesForPlayer(""))
+            .Should().Throw<ArgumentException>();
     }
 
     [Fact]
     public void GetMatchesForPlayer_WhitespacePlayerName_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _repository.GetMatchesForPlayer("   "));
+        _repository.Invoking(r => r.GetMatchesForPlayer("   "))
+            .Should().Throw<ArgumentException>();
     }
 }

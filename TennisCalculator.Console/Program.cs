@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using TennisCalculator.Console.Commands;
 using TennisCalculator.Console.Ioc;
-using TennisCalculator.DataAccess.Processor;
-using TennisCalculator.DataAccess.RawData;
+using TennisCalculator.Processing.Processor;
+using TennisCalculator.Processing.RawData;
 using TennisCalculator.Domain;
 
 try

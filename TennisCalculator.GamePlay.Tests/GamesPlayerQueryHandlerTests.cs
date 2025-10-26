@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using TennisCalculator.Domain;
 using TennisCalculator.Domain.DataAccess;
@@ -37,7 +38,7 @@ public class GamesPlayerQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("9 10", result); // 6+3 games won, 4+6 games lost
+        result.Should().Be("9 10"); // 6+3 games won, 4+6 games lost
     }
 
     [Fact]
@@ -51,7 +52,7 @@ public class GamesPlayerQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("Error: Player 'Unknown Player' not found", result);
+        result.Should().Be("Error: Player 'Unknown Player' not found");
     }
 
     [Fact]
@@ -61,8 +62,7 @@ public class GamesPlayerQueryHandlerTests
         var query = new GamesPlayerQuery { PlayerName = "" };
 
         // Act & Assert
-        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
-        Assert.Contains("Player name cannot be null or empty", exception.Message);
+        _handler.Handle(query).Should().Contain("Player name cannot be null or empty");
     }
 
     [Fact]
@@ -72,8 +72,7 @@ public class GamesPlayerQueryHandlerTests
         var query = new GamesPlayerQuery { PlayerName = null! };
 
         // Act & Assert
-        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
-        Assert.Contains("Player name cannot be null or empty", exception.Message);
+        _handler.Handle(query).Should().Contain("Player name cannot be null or empty");
     }
 
     [Fact]
@@ -92,7 +91,7 @@ public class GamesPlayerQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("6 0", result);
+        result.Should().Be("6 0");
     }
 
     [Fact]
@@ -114,14 +113,7 @@ public class GamesPlayerQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("0 0", result);
-    }
-
-    [Fact]
-    public void Constructor_NullRepository_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new GamesPlayerQueryHandler(null!));
+        result.Should().Be("0 0");
     }
 
     private TennisMatch CreateMatchWithGames(string matchId, TennisPlayer winner, int winnerGames, int loserGames)

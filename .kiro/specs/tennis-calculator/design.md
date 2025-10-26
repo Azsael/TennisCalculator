@@ -6,19 +6,24 @@ The Tennis Calculator is a C# .NET console application that implements a domain-
 
 ## Architecture
 
-The application follows a layered architecture pattern:
+The application follows a simplified layered architecture pattern after refactoring:
 
 ```
 ┌─────────────────────────────────────┐
-│           Console Interface         │  ← User interaction, command parsing
+│        Console Application          │  ← User interaction, command parsing, query handlers
 ├─────────────────────────────────────┤
-│          Application Layer          │  ← Query handlers, orchestration
+│         Processing Layer            │  ← Data loading, file parsing, scoring logic
 ├─────────────────────────────────────┤
-│            Domain Layer             │  ← Tennis scoring logic, entities
-├─────────────────────────────────────┤
-│        Infrastructure Layer         │  ← File I/O, data persistence
+│            Domain Layer             │  ← Tennis entities, business rules
 └─────────────────────────────────────┘
 ```
+
+### Architectural Changes
+
+The refactoring eliminates the GamePlay library and redistributes functionality:
+- **Console Application**: Now contains command processing and query handlers (previously in GamePlay)
+- **Processing Library**: Renamed from DataAccess, contains scoring logic (moved from GamePlay) plus data processing
+- **Domain Library**: Contains core tennis entities and business rules
 
 ### Key Architectural Decisions
 
@@ -119,7 +124,9 @@ public record TennisPlayerStatistics
 
 
 
-#### Scoring Interfaces
+### Processing Layer
+
+#### Scoring Interfaces (Moved from GamePlay to Processing)
 
 **IGameScorer**
 ```csharp
@@ -278,9 +285,35 @@ public class FileDataLoader : IDataLoader
 }
 ```
 
-### Application Layer
+### Console Application Layer
 
-#### Query Handlers
+#### Command Processing (Moved from GamePlay)
+
+**ICommandLineProcessor**
+```csharp
+public interface ICommandLineProcessor
+{
+    Task<int> Process();
+}
+```
+
+**CommandLineProcessor**
+```csharp
+public class CommandLineProcessor : ICommandLineProcessor
+{
+    private readonly IQueryParser _queryParser;
+    private readonly IScoreMatchQueryHandler _scoreMatchQueryHandler;
+    private readonly IGamesPlayerQueryHandler _gamesPlayerQueryHandler;
+    
+    public Task<int> Process()
+    {
+        // Handle interactive and redirected input
+        // Process commands and display results
+    }
+}
+```
+
+#### Query Handlers (Moved from GamePlay)
 
 **IQueryHandler Interface**
 ```csharp
@@ -326,17 +359,27 @@ public class GamesPlayerQueryHandler : IQueryHandler<GamesPlayerQuery, string>
 }
 ```
 
-#### Services
+#### Tournament Processing Services
 
-**TournamentProcessor**
+**ITournamentDataProcessor**
 ```csharp
-public class TournamentProcessor
+public interface ITournamentDataProcessor
+{
+    Task ProcessTournamentData(string source, CancellationToken cancellationToken = default);
+}
+```
+
+**TournamentDataProcessor**
+```csharp
+public class TournamentDataProcessor : ITournamentDataProcessor
 {
     private readonly IEnumerable<IDataLoader> _dataLoaders;
     private readonly IMatchRepository _matchRepository;
-    private readonly IScoringStrategy _scoringStrategy;
+    private readonly IGameScorer _gameScorer;
+    private readonly ISetScorer _setScorer;
+    private readonly IMatchScorer _matchScorer;
     
-    public async Task ProcessTournamentDataAsync(string source)
+    public async Task ProcessTournamentData(string source, CancellationToken cancellationToken = default)
     {
         IDataLoader? dataLoader = null;
         foreach (var loader in _dataLoaders)
@@ -367,7 +410,7 @@ public class TournamentProcessor
 }
 ```
 
-### Infrastructure Layer
+### Processing Layer (Renamed from Infrastructure)
 
 #### File Processing
 

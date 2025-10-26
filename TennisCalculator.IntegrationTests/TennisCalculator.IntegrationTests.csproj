@@ -10,13 +10,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
     <ProjectReference Include="..\TennisCalculator.Console\TennisCalculator.Console.csproj" />
     <ProjectReference Include="..\TennisCalculator.Domain\TennisCalculator.Domain.csproj" />
     <ProjectReference Include="..\TennisCalculator.GamePlay\TennisCalculator.GamePlay.csproj" />
-    <ProjectReference Include="..\TennisCalculator.DataAccess\TennisCalculator.DataAccess.csproj" />
+    <ProjectReference Include="..\TennisCalculator.Processing\TennisCalculator.Processing.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
 </Project>

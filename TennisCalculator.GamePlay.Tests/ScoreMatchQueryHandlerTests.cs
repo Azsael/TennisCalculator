@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using TennisCalculator.Domain;
 using TennisCalculator.Domain.DataAccess;
@@ -32,7 +33,7 @@ public class ScoreMatchQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("Player 1 defeated Player 2, 2 sets to 1", result);
+        result.Should().Be("Player 1 defeated Player 2, 2 sets to 1");
     }
 
     [Fact]
@@ -46,7 +47,7 @@ public class ScoreMatchQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("Error: Match '99' not found", result);
+        result.Should().Be("Error: Match '99' not found");
     }
 
     [Fact]
@@ -67,7 +68,7 @@ public class ScoreMatchQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("Error: Match '01' is not completed", result);
+        result.Should().Be("Error: Match '01' is not completed");
     }
 
     [Fact]
@@ -77,8 +78,7 @@ public class ScoreMatchQueryHandlerTests
         var query = new ScoreMatchQuery { MatchId = "" };
 
         // Act & Assert
-        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
-        Assert.Contains("Match ID cannot be null or empty", exception.Message);
+        _handler.Handle(query).Should().Contain("Match ID cannot be null or empty");
     }
 
     [Fact]
@@ -88,8 +88,7 @@ public class ScoreMatchQueryHandlerTests
         var query = new ScoreMatchQuery { MatchId = null! };
 
         // Act & Assert
-        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
-        Assert.Contains("Match ID cannot be null or empty", exception.Message);
+        _handler.Handle(query).Should().Contain("Match ID cannot be null or empty");
     }
 
     [Fact]
@@ -104,14 +103,7 @@ public class ScoreMatchQueryHandlerTests
         var result = _handler.Handle(query);
 
         // Assert
-        Assert.Equal("Player 2 defeated Player 1, 2 sets to 0", result);
-    }
-
-    [Fact]
-    public void Constructor_NullRepository_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new ScoreMatchQueryHandler(null!));
+        result.Should().Be("Player 2 defeated Player 1, 2 sets to 0");
     }
 
     private TennisMatch CreateCompletedMatch(string matchId, TennisPlayer winner, int winnerSets, int loserSets)

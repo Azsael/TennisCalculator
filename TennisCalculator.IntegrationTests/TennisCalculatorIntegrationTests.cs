@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using FluentAssertions;
 using Xunit;
 
 namespace TennisCalculator.IntegrationTests;
@@ -53,7 +54,7 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
+        result.ExitCode.Should().Be(0);
         
         var outputLines = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries)
             .Select(line => line.Trim())
@@ -61,10 +62,10 @@ public class TennisCalculatorIntegrationTests
             .ToArray();
 
         // Verify match result query
-        Assert.Contains("Person C defeated Person A, 2 sets to 1", outputLines);
+        outputLines.Should().Contain("Person C defeated Person A, 2 sets to 1");
         
         // Verify player statistics query  
-        Assert.Contains("22 24", outputLines);
+        outputLines.Should().Contain("22 24");
     }
 
     [Fact]
@@ -82,14 +83,14 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
+        result.ExitCode.Should().Be(0);
         
         var outputLines = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries)
             .Select(line => line.Trim())
             .Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(">"))
             .ToArray();
 
-        Assert.Contains("Person A defeated Person B, 2 sets to 0", outputLines);
+        outputLines.Should().Contain("Person A defeated Person B, 2 sets to 0");
     }
 
     [Fact]
@@ -107,8 +108,8 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("Error: Match '99' not found", result.Output);
+        result.ExitCode.Should().Be(0);
+        result.Output.Should().Contain("Error: Match '99' not found");
     }
 
     [Fact]
@@ -126,8 +127,8 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("Error: Player 'NonExistentPlayer' not found", result.Output);
+        result.ExitCode.Should().Be(0);
+        result.Output.Should().Contain("Error: Player 'NonExistentPlayer' not found");
     }
 
     [Fact]
@@ -160,9 +161,9 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleApp(Array.Empty<string>());
 
         // Assert
-        Assert.Equal(1, result.ExitCode);
-        Assert.Contains("Error: Please provide a tournament file path", result.Output);
-        Assert.Contains("Usage: TennisCalculator.Console <tournament-file-path>", result.Output);
+        result.ExitCode.Should().Be(1);
+        result.Output.Should().Contain("Error: Please provide a tournament file path");
+        result.Output.Should().Contain("Usage: TennisCalculator.Console <tournament-file-path>");
     }
 
     [Fact]

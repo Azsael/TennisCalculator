@@ -2,20 +2,24 @@
 
 ## Introduction
 
-The Tennis Calculator is a C# .NET console application that processes tennis match data from input files and provides statistical analysis. The system parses match point sequences, calculates game and set outcomes using simplified tennis scoring rules, and responds to queries about match results and player statistics.
+The Tennis Calculator is a C# .NET console application that processes tennis match data from input files and provides statistical analysis. The system parses match point sequences, calculates game and set outcomes using simplified tennis scoring rules, and responds to user commands about match results and player statistics. This document covers the architectural refactoring to improve separation of concerns and eliminate the GamePlay library in favor of a cleaner domain-driven design.
 
 ## Glossary
 
 - **Tennis_Calculator**: The main C# .NET console application system that processes tennis match data
+- **Processing_Library**: The TennisCalculator.Processing library responsible for data loading, file parsing, and match processing
+- **Domain_Library**: The TennisCalculator.Domain library containing core tennis entities and business logic
+- **Console_Application**: The main console application handling user interaction and command processing
 - **Match**: A tennis competition between two players consisting of multiple sets in a best-of-3 format
 - **Set**: A collection of games where the first player to win 6 games wins the set
 - **Game**: A scoring unit where a player must win 4 points and be ahead by at least 2 points
 - **Point**: The smallest scoring unit in tennis (0, 15, 30, 40, deuce, advantage, game)
 - **Tournament_File**: A text file containing multiple match data with header information and point sequences
-- **Query_Command**: A user command requesting specific match or player statistics
+- **User_Command**: A user input requesting specific match or player statistics or application control
+- **Command_Processor**: The component responsible for parsing and executing user commands
 - **Player_Statistics**: Aggregated data about games won and lost for a specific player
 - **Match_Result**: The outcome of a completed match showing winner and set scores
-- **Help_Text**: Instructional text displaying available query commands and their formats
+- **Help_Text**: Instructional text displaying available commands and their formats
 
 ## Requirements
 
@@ -118,3 +122,18 @@ The Tennis Calculator is a C# .NET console application that processes tennis mat
 3. THE Tennis_Calculator SHALL validate match header format before processing point sequences
 4. THE Tennis_Calculator SHALL handle Tournament_Files containing multiple matches as demonstrated in full_tournament.txt
 5. THE Tennis_Calculator SHALL maintain match state separately for each match in the Tournament_File
+
+### Requirement 9
+
+**User Story:** As a developer, I want to refactor the application architecture to improve separation of concerns, so that the codebase is more maintainable and follows domain-driven design principles.
+
+#### Acceptance Criteria
+
+1. THE Tennis_Calculator SHALL rename the TennisCalculator.DataAccess library to TennisCalculator.Processing
+2. THE Processing_Library SHALL contain all data loading, file parsing, and match processing functionality
+3. THE Domain_Library SHALL contain all tennis scoring logic, entities, and business rules previously in GamePlay
+4. THE Console_Application SHALL contain all user interaction and command processing functionality previously in GamePlay
+5. THE Tennis_Calculator SHALL eliminate the TennisCalculator.GamePlay library entirely
+6. THE Tennis_Calculator SHALL update all project references to reflect the new library structure
+7. THE Tennis_Calculator SHALL ensure all comments, documentation, and naming conventions are consistent with the new architecture
+8. THE Command_Processor SHALL replace the previous query parser with expanded functionality for user input processing

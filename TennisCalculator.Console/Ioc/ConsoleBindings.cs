@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using TennisCalculator.Console.Commands;
-using TennisCalculator.DataAccess.Ioc;
+using TennisCalculator.Processing.Ioc;
 using TennisCalculator.GamePlay.Ioc;
+using TennisCalculator.DataAccess.Ioc;
 
 namespace TennisCalculator.Console.Ioc;
 
@@ -18,7 +19,8 @@ public static class ConsoleBindings
     {
         return services
             .BindConsole()
-            .BindDataAccess()
+            .BindDomain()
+            .BindProcessing()
             .BindGamePlay()
             .BuildServiceProvider();
     }

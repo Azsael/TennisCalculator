@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TennisCalculator.GamePlay\TennisCalculator.GamePlay.csproj" />
-    <ProjectReference Include="..\TennisCalculator.DataAccess\TennisCalculator.DataAccess.csproj" />
+    <ProjectReference Include="..\TennisCalculator.Processing\TennisCalculator.Processing.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
   </ItemGroup>

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using TennisCalculator.Domain;
 
 namespace TennisCalculator.Domain.Tests;
@@ -12,8 +13,8 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "John Doe" };
 
         // Act & Assert
-        Assert.True(player1.Equals(player2));
-        Assert.Equal(player1, player2);
+        player1.Equals(player2).Should().BeTrue();
+        player1.Should().Be(player2);
     }
 
     [Fact]
@@ -24,8 +25,8 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "john doe" };
 
         // Act & Assert
-        Assert.True(player1.Equals(player2));
-        Assert.Equal(player1, player2);
+        player1.Equals(player2).Should().BeTrue();
+        player1.Should().Be(player2);
     }
 
     [Fact]
@@ -36,8 +37,8 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "john doe" };
 
         // Act & Assert
-        Assert.True(player1.Equals(player2));
-        Assert.Equal(player1, player2);
+        player1.Equals(player2).Should().BeTrue();
+        player1.Should().Be(player2);
     }
 
     [Fact]
@@ -48,8 +49,8 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "Jane Smith" };
 
         // Act & Assert
-        Assert.False(player1.Equals(player2));
-        Assert.NotEqual(player1, player2);
+        player1.Equals(player2).Should().BeFalse();
+        player1.Should().NotBe(player2);
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class TennisPlayerTests
         var player = new TennisPlayer { Name = "John Doe" };
 
         // Act & Assert
-        Assert.False(player.Equals(null));
+        player.Equals(null).Should().BeFalse();
     }
 
     [Fact]
@@ -70,7 +71,7 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "john doe" };
 
         // Act & Assert
-        Assert.Equal(player1.GetHashCode(), player2.GetHashCode());
+        player1.GetHashCode().Should().Be(player2.GetHashCode());
     }
 
     [Fact]
@@ -81,6 +82,6 @@ public class TennisPlayerTests
         var player2 = new TennisPlayer { Name = "Jane Smith" };
 
         // Act & Assert
-        Assert.NotEqual(player1.GetHashCode(), player2.GetHashCode());
+        player1.GetHashCode().Should().NotBe(player2.GetHashCode());
     }
 }
