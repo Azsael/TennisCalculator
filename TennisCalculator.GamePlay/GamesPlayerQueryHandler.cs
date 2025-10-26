@@ -1,16 +1,13 @@
-using TennisCalculator.DataAccess;
 using TennisCalculator.Domain;
+using TennisCalculator.Domain.DataAccess;
 
 namespace TennisCalculator.GamePlay;
 
 /// <summary>
 /// Handles queries for player game statistics
 /// </summary>
-public class GamesPlayerQueryHandler(IMatchRepository matchRepository) : IGamesPlayerQueryHandler
+public class GamesPlayerQueryHandler(ITennisMatchRepository matchRepository) : IGamesPlayerQueryHandler
 {
-    private readonly IMatchRepository _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
-
-
     /// <summary>
     /// Handles a games player query and returns formatted player statistics
     /// </summary>
@@ -23,10 +20,10 @@ public class GamesPlayerQueryHandler(IMatchRepository matchRepository) : IGamesP
         {
             if (string.IsNullOrWhiteSpace(query.PlayerName))
             {
-                throw new QueryProcessingException("Player name cannot be null or empty", query.PlayerName ?? string.Empty);
+                return "Player name cannot be null or empty";
             }
 
-            var playerMatches = _matchRepository.GetMatchesForPlayer(query.PlayerName);
+            var playerMatches = matchRepository.GetMatchesForPlayer(query.PlayerName);
             
             if (!playerMatches.Any())
             {
@@ -37,14 +34,9 @@ public class GamesPlayerQueryHandler(IMatchRepository matchRepository) : IGamesP
             
             return $"{statistics.GamesWon} {statistics.GamesLost}";
         }
-        catch (QueryProcessingException)
-        {
-            // Re-throw query processing exceptions as-is
-            throw;
-        }
         catch (Exception ex)
         {
-            throw new QueryProcessingException($"Error processing games player query: {ex.Message}", query.PlayerName ?? string.Empty, ex);
+            return $"Error processing games player query: {ex.Message}";
         }
     }
 

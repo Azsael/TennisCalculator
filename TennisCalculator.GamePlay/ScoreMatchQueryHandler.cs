@@ -1,16 +1,12 @@
-using TennisCalculator.DataAccess;
-using TennisCalculator.Domain;
+using TennisCalculator.Domain.DataAccess;
 
 namespace TennisCalculator.GamePlay;
 
 /// <summary>
 /// Handles queries for match scores and results
 /// </summary>
-public class ScoreMatchQueryHandler(IMatchRepository matchRepository) : IScoreMatchQueryHandler
+public class ScoreMatchQueryHandler(ITennisMatchRepository matchRepository) : IScoreMatchQueryHandler
 {
-    private readonly IMatchRepository _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
-
-
     /// <summary>
     /// Handles a score match query and returns formatted match result
     /// </summary>
@@ -23,10 +19,10 @@ public class ScoreMatchQueryHandler(IMatchRepository matchRepository) : IScoreMa
         {
             if (string.IsNullOrWhiteSpace(query.MatchId))
             {
-                throw new QueryProcessingException("Match ID cannot be null or empty", query.MatchId ?? string.Empty);
+                return "Match ID cannot be null or empty";
             }
 
-            var match = _matchRepository.GetMatch(query.MatchId);
+            var match = matchRepository.GetMatch(query.MatchId);
             
             if (match == null)
             {
@@ -62,14 +58,9 @@ public class ScoreMatchQueryHandler(IMatchRepository matchRepository) : IScoreMa
 
             return $"{winner.Name} defeated {loser.Name}, {winnerSets} sets to {loserSets}";
         }
-        catch (QueryProcessingException)
-        {
-            // Re-throw query processing exceptions as-is
-            throw;
-        }
         catch (Exception ex)
         {
-            throw new QueryProcessingException($"Error processing score match query: {ex.Message}", query.MatchId ?? string.Empty, ex);
+            return $"Error processing score match query: {ex.Message}";
         }
     }
 }

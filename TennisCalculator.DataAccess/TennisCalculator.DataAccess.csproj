@@ -8,7 +8,9 @@
     <WarningsNotAsErrors>612,618,CS9042</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <ProjectReference Include="..\TennisCalculator.Domain\TennisCalculator.Domain.csproj" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 </Project>

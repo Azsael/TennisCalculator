@@ -1,16 +1,17 @@
 using System.Linq;
-using TennisCalculator.DataAccess.IO;
-using TennisCalculator.Domain;
+using TennisCalculator.DataAccess.Data;
+using TennisCalculator.DataAccess.Loaders;
+using TennisCalculator.DataAccess.RawData;
 
 namespace TennisCalculator.DataAccess.Tests;
 
-public class TournamentFileParserTests
+public class ITennisDataParserTests
 {
-    private readonly TournamentFileParser _parser;
+    private readonly ITennisDataParser _parser;
 
-    public TournamentFileParserTests()
+    public ITennisDataParserTests()
     {
-        _parser = new TournamentFileParser();
+        _parser = new TennisDataParser();
     }
 
     [Fact]
@@ -29,7 +30,7 @@ public class TournamentFileParserTests
 
         // Act
         var results = new List<RawMatchData>();
-        await foreach (var matchData in _parser.ParseTournamentFileAsync(lines))
+        await foreach (var matchData in _parser.ParseMatchData(lines))
         {
             results.Add(matchData);
         }
@@ -62,7 +63,7 @@ public class TournamentFileParserTests
 
         // Act
         var results = new List<RawMatchData>();
-        await foreach (var matchData in _parser.ParseTournamentFileAsync(lines))
+        await foreach (var matchData in _parser.ParseMatchData(lines))
         {
             results.Add(matchData);
         }
@@ -92,9 +93,9 @@ public class TournamentFileParserTests
         }.ToAsyncEnumerable();
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<FileProcessingException>(async () =>
+        var exception = await Assert.ThrowsAsync<TennisDataSourceException>(async () =>
         {
-            await foreach (var matchData in _parser.ParseTournamentFileAsync(lines))
+            await foreach (var matchData in _parser.ParseMatchData(lines))
             {
                 // Consume the enumerable
             }
@@ -115,9 +116,9 @@ public class TournamentFileParserTests
         }.ToAsyncEnumerable();
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<FileProcessingException>(async () =>
+        var exception = await Assert.ThrowsAsync<TennisDataSourceException>(async () =>
         {
-            await foreach (var matchData in _parser.ParseTournamentFileAsync(lines))
+            await foreach (var matchData in _parser.ParseMatchData(lines))
             {
                 // Consume the enumerable
             }
@@ -144,7 +145,7 @@ public class TournamentFileParserTests
 
         // Act
         var results = new List<RawMatchData>();
-        await foreach (var matchData in _parser.ParseTournamentFileAsync(lines))
+        await foreach (var matchData in _parser.ParseMatchData(lines))
         {
             results.Add(matchData);
         }

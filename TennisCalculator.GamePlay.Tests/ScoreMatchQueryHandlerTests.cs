@@ -1,20 +1,20 @@
 using Moq;
-using TennisCalculator.DataAccess;
 using TennisCalculator.Domain;
+using TennisCalculator.Domain.DataAccess;
 using TennisCalculator.GamePlay;
 
 namespace TennisCalculator.GamePlay.Tests;
 
 public class ScoreMatchQueryHandlerTests
 {
-    private readonly Mock<IMatchRepository> _mockRepository;
+    private readonly Mock<ITennisMatchRepository> _mockRepository;
     private readonly ScoreMatchQueryHandler _handler;
     private readonly TennisPlayer _player1;
     private readonly TennisPlayer _player2;
 
     public ScoreMatchQueryHandlerTests()
     {
-        _mockRepository = new Mock<IMatchRepository>();
+        _mockRepository = new Mock<ITennisMatchRepository>();
         _handler = new ScoreMatchQueryHandler(_mockRepository.Object);
         _player1 = new TennisPlayer { Name = "Player 1" };
         _player2 = new TennisPlayer { Name = "Player 2" };
@@ -77,7 +77,7 @@ public class ScoreMatchQueryHandlerTests
         var query = new ScoreMatchQuery { MatchId = "" };
 
         // Act & Assert
-        var exception = Assert.Throws<QueryProcessingException>(() => _handler.Handle(query));
+        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
         Assert.Contains("Match ID cannot be null or empty", exception.Message);
     }
 
@@ -88,7 +88,7 @@ public class ScoreMatchQueryHandlerTests
         var query = new ScoreMatchQuery { MatchId = null! };
 
         // Act & Assert
-        var exception = Assert.Throws<QueryProcessingException>(() => _handler.Handle(query));
+        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
         Assert.Contains("Match ID cannot be null or empty", exception.Message);
     }
 

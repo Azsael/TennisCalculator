@@ -15,14 +15,6 @@ public static class GamePlayBindings
     public static IServiceCollection BindGamePlay(this IServiceCollection services)
     {
         return services
-            // Register scoring strategies
-            .AddSingleton<IGameScorer, StandardGameScorer>()
-            .AddSingleton<ISetScorer, StandardSetScorer>()
-            .AddSingleton<IMatchScorer, StandardMatchScorer>()
-            
-            // Register application services
-            .AddSingleton<ITournamentProcessor, TournamentProcessor>()
-            
             // Register query handlers
             .AddSingleton<IScoreMatchQueryHandler, ScoreMatchQueryHandler>()
             .AddSingleton<IGamesPlayerQueryHandler, GamesPlayerQueryHandler>();

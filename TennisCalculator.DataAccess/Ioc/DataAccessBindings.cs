@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TennisCalculator.DataAccess.IO;
+using TennisCalculator.DataAccess.Loaders;
+using TennisCalculator.DataAccess.Processor;
+using TennisCalculator.DataAccess.Scoring;
 
 namespace TennisCalculator.DataAccess.Ioc;
 
@@ -11,12 +13,17 @@ public static class DataAccessBindings
     /// <returns>Configured service provider</returns>
     public static IServiceCollection BindDataAccess(this IServiceCollection services)
     {
-        // Register data access components
         return services
-            .AddSingleton<IFileReader, FileReader>()
-            .AddSingleton<ITournamentFileParser, TournamentFileParser>()
-            .AddSingleton<IMatchRepository, InMemoryMatchRepository>()
-            // Register data loaders
-            .AddSingleton<IDataLoader, FileDataLoader>();
+            .AddSingleton<ITournamentDataProcessor, TournamentDataProcessor>()
+            // Data Loaders and Parsers
+            .AddSingleton<ITennisMatchDataLoader, TennisMatchDataLoader>()
+            .AddSingleton<ITennisDataLoader, TennisDataFileLoader>()
+            .AddSingleton<ITennisDataLoader, TennisDataStreamLoader>()
+            .AddSingleton<ITennisDataParser, TennisDataParser>()
+            // Register scoring strategies
+            .AddSingleton<IGameScorer, StandardGameScorer>()
+            .AddSingleton<ISetScorer, StandardSetScorer>()
+            .AddSingleton<IMatchScorer, StandardMatchScorer>()
+        ;
     }
 }

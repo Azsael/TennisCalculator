@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using TennisCalculator.Console.Commands;
 using TennisCalculator.DataAccess.Ioc;
 using TennisCalculator.GamePlay.Ioc;
 
@@ -13,18 +14,19 @@ public static class ConsoleBindings
     /// Configures dependency injection container with all services and interfaces
     /// </summary>
     /// <returns>Configured service provider</returns>
-    public static ServiceProvider ConfigureServices()
+    public static IServiceProvider ConfigureConsole(this IServiceCollection services)
     {
-        var services = new ServiceCollection();
-
         return services
-            // Register data access components
+            .BindConsole()
             .BindDataAccess()
-            // Register gameplay components
             .BindGamePlay()
-            // Register console interface components
-            .AddSingleton<IQueryParser, QueryParser>()
-            .AddSingleton<ICommandLineInterface, CommandLineInterface>()
             .BuildServiceProvider();
+    }
+
+    public static IServiceCollection BindConsole(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<IQueryParser, QueryParser>()
+            .AddSingleton<ICommandLineProcessor, CommandLineProcessor>();
     }
 }

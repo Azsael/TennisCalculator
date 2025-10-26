@@ -19,6 +19,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisCalculator.DataAccess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisCalculator.IntegrationTests", "TennisCalculator.IntegrationTests\TennisCalculator.IntegrationTests.csproj", "{7DE950E8-1665-480A-9A5E-B703C5CC499C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 - Solution Items", "0 - Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		full_tournament.txt = full_tournament.txt
+		SPEC.md = SPEC.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Tests", "1 - Tests", "{369CB01D-A1A7-72D2-AABC-3F0945D148A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Apps", "2 - Apps", "{7DC331D0-3EC4-40A6-69FB-1CBEB2E0D1EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Libs", "3 - Libs", "{643747C7-0307-8931-84D8-A7D1915E22E5}"
+	ProjectSection(SolutionItems) = preProject
+		TennisCalculator.Console\Program.cs = TennisCalculator.Console\Program.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,5 +144,18 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8D9AB939-4545-48E6-BE38-A65E27839365} = {7DC331D0-3EC4-40A6-69FB-1CBEB2E0D1EA}
+		{D6521948-F038-4944-912D-5E4A28A24BAC} = {643747C7-0307-8931-84D8-A7D1915E22E5}
+		{FF99955B-AA13-401F-ABB6-5CA0454A7B1F} = {643747C7-0307-8931-84D8-A7D1915E22E5}
+		{E452297C-BE99-4810-9143-233CB1866779} = {643747C7-0307-8931-84D8-A7D1915E22E5}
+		{F184255C-98A5-4D72-B78B-805BCD24AFD6} = {369CB01D-A1A7-72D2-AABC-3F0945D148A2}
+		{0C8A9BBE-8707-4968-8415-B871CED03F85} = {369CB01D-A1A7-72D2-AABC-3F0945D148A2}
+		{42793BC5-E08D-4992-B63E-70A4F3E3C74C} = {369CB01D-A1A7-72D2-AABC-3F0945D148A2}
+		{7DE950E8-1665-480A-9A5E-B703C5CC499C} = {369CB01D-A1A7-72D2-AABC-3F0945D148A2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4DCF978A-D650-4D57-9955-962391BADD87}
 	EndGlobalSection
 EndGlobal

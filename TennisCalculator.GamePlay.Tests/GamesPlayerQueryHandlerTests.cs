@@ -1,20 +1,20 @@
 using Moq;
-using TennisCalculator.DataAccess;
 using TennisCalculator.Domain;
+using TennisCalculator.Domain.DataAccess;
 using TennisCalculator.GamePlay;
 
 namespace TennisCalculator.GamePlay.Tests;
 
 public class GamesPlayerQueryHandlerTests
 {
-    private readonly Mock<IMatchRepository> _mockRepository;
+    private readonly Mock<ITennisMatchRepository> _mockRepository;
     private readonly GamesPlayerQueryHandler _handler;
     private readonly TennisPlayer _player1;
     private readonly TennisPlayer _player2;
 
     public GamesPlayerQueryHandlerTests()
     {
-        _mockRepository = new Mock<IMatchRepository>();
+        _mockRepository = new Mock<ITennisMatchRepository>();
         _handler = new GamesPlayerQueryHandler(_mockRepository.Object);
         _player1 = new TennisPlayer { Name = "Player 1" };
         _player2 = new TennisPlayer { Name = "Player 2" };
@@ -61,7 +61,7 @@ public class GamesPlayerQueryHandlerTests
         var query = new GamesPlayerQuery { PlayerName = "" };
 
         // Act & Assert
-        var exception = Assert.Throws<QueryProcessingException>(() => _handler.Handle(query));
+        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
         Assert.Contains("Player name cannot be null or empty", exception.Message);
     }
 
@@ -72,7 +72,7 @@ public class GamesPlayerQueryHandlerTests
         var query = new GamesPlayerQuery { PlayerName = null! };
 
         // Act & Assert
-        var exception = Assert.Throws<QueryProcessingException>(() => _handler.Handle(query));
+        var exception = Assert.Throws<Exception>(() => _handler.Handle(query));
         Assert.Contains("Player name cannot be null or empty", exception.Message);
     }
 
