@@ -2,42 +2,25 @@ using TennisCalculator.Domain;
 
 namespace TennisCalculator.Processing.Scoring;
 
+/// <summary>
+/// Provides tennis match scoring functionality using best-of-3 sets format
+/// </summary>
 internal class StandardMatchScorer : IMatchScorer
 {
-    public TennisMatch AddSet(TennisMatch match, TennisSet completedSet)
+    private const int SetsToWinMatch = 2;
+
+    public TennisMatch ConvertSets(string matchId, IList<TennisPlayer> players, IEnumerable<TennisSet> sets)
     {
-        var newSets = match.Sets.Append(completedSet).ToList();
-        var newMatch = match with { Sets = newSets, CurrentSet = null };
-        var winner = DetermineMatchWinner(newMatch);
-        
-        return newMatch with { Winner = winner };
-    }
-    
-    public TennisPlayer? DetermineMatchWinner(TennisMatch match)
-    {
-        var setsWon = match.Players.ToDictionary(p => p, p => 
-            match.Sets.Count(s => s.HasWinner && s.Winner!.Equals(p)));
-        
-        // Best of 3 sets - first to win 2 sets
-        foreach (var player in match.Players)
+        var tennisSets = sets.ToList();
+
+        var winner = tennisSets.GroupBy(g => g.Winner).Where(x => x.Count() >= SetsToWinMatch).Select(x => x.Key).FirstOrDefault();
+
+        return new TennisMatch
         {
-            if (setsWon[player] >= 2)
-            {
-                return player;
-            }
-        }
-        
-        return null; // No winner yet
-    }
-    
-    public TennisMatch StartNewSet(TennisMatch match, IReadOnlyList<TennisPlayer> players)
-    {
-        var newSet = new TennisSet
-        {
-            Players = players,
-            Games = new List<TennisGame>()
+            MatchId = matchId,
+            Players = [..players],
+            Sets = tennisSets,
+            Winner = winner
         };
-        
-        return match with { CurrentSet = newSet };
     }
 }

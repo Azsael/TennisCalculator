@@ -19,10 +19,22 @@ internal class UserInputHandler(IEnumerable<IUserCommand> commands, ILogger<User
         if (command is null)
         {
             logger.LogWarning("Unknown command: {Input}", input);
-            return null;
+            return $"Error: Unrecognised command{Environment.NewLine}{GetHelp()}";
         }
 
         return await command.Handle(splitInput, cancellationToken);
+    }
+
+    /// <summary>
+    /// Displays help text with available commands
+    /// </summary>
+    private string GetHelp()
+    {
+        return @$"Available commands:{Environment.NewLine}" +
+        $"  Score Match <id>        - Get match result{Environment.NewLine}" +
+        $"  Games Player <name>     - Get player statistics{Environment.NewLine}" +
+        $"  quit                    - Exit application{Environment.NewLine}" +
+        $"Please try again.";
     }
 }
 

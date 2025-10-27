@@ -16,11 +16,10 @@ internal class UserInputProcessor(
     {
         while (true) 
         {
-            var input = (await ReadLineAsync()).Trim();
+            var input = (await ReadLineAsync(cancellationToken)).Trim();
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                if (System.Console.IsInputRedirected) return 0;// exit if redirected
                 continue;
             }
 
@@ -39,7 +38,6 @@ internal class UserInputProcessor(
             catch (Exception ex)
             {
                 System.Console.WriteLine($"Unexpected error: {ex.Message}");
-                DisplayHelp();
             }
         }
     }
@@ -53,7 +51,7 @@ internal class UserInputProcessor(
             // async console input handling
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (System.Console.KeyAvailable)
+                if (System.Console.IsInputRedirected || System.Console.KeyAvailable)
                 {
                     return System.Console.ReadLine() ?? string.Empty;
                 }
@@ -64,15 +62,4 @@ internal class UserInputProcessor(
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Displays help text with available commands
-    /// </summary>
-    private void DisplayHelp()
-    {
-        System.Console.WriteLine("Available commands:");
-        System.Console.WriteLine("  Score Match <id>        - Get match result");
-        System.Console.WriteLine("  Games Player <name>     - Get player statistics");
-        System.Console.WriteLine("  quit                    - Exit application");
-        System.Console.WriteLine("Please try again.");
-    }
 }

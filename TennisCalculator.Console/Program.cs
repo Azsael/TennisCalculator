@@ -8,14 +8,14 @@ using TennisCalculator.Processing.RawData;
 
 var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
 var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
 
 var services = new ServiceCollection()
-    .ConfigureConsole();
+    .ConfigureConsole(configuration);
 
 var data = args.FirstOrDefault();
 if (string.IsNullOrWhiteSpace(data))

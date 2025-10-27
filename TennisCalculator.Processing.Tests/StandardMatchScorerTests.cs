@@ -9,126 +9,56 @@ public class StandardMatchScorerTests
     private readonly StandardMatchScorer _scorer;
     private readonly TennisPlayer _player1;
     private readonly TennisPlayer _player2;
-    private readonly TennisMatch _initialMatch;
 
     public StandardMatchScorerTests()
     {
         _scorer = new StandardMatchScorer();
         _player1 = new TennisPlayer { Name = "Player 1" };
         _player2 = new TennisPlayer { Name = "Player 2" };
-        
-        _initialMatch = new TennisMatch
-        {
-            MatchId = "TEST01",
-            Players = new[] { _player1, _player2 },
-            Sets = new List<TennisSet>()
-        };
     }
 
     [Fact]
-    public void AddSet_FirstSet_AddsSetToMatch()
+    public void ConvertSets_TwoSetsForPlayer1_CreatesCompletedMatch()
     {
-        // Arrange
-        var completedSet = CreateCompletedSet(_player1);
-
-        // Act
-        var result = _scorer.AddSet(_initialMatch, completedSet);
-
-        // Assert
-        result.Sets.Should().ContainSingle();
-        result.Sets[0].Should().Be(completedSet);
-        result.CurrentSet.Should().BeNull();
-        result.Winner.Should().BeNull(); // Not enough sets to win match
-    }
-
-    [Fact]
-    public void AddSet_SecondSet_WinsMatch()
-    {
-        // Arrange - Player 1 has won 1 set already
-        var firstSet = CreateCompletedSet(_player1);
-        var matchWithOneSet = _initialMatch with { Sets = new[] { firstSet } };
-        var secondSet = CreateCompletedSet(_player1);
-
-        // Act
-        var result = _scorer.AddSet(matchWithOneSet, secondSet);
-
-        // Assert
-        result.Sets.Should().HaveCount(2);
-        result.Winner.Should().Be(_player1);
-        result.HasWinner.Should().BeTrue();
-    }
-
-    [Fact]
-    public void AddSet_AlternatingSets_NoWinnerYet()
-    {
-        // Arrange - Player 1 wins first set, Player 2 wins second set
-        var firstSet = CreateCompletedSet(_player1);
-        var matchWithOneSet = _initialMatch with { Sets = new[] { firstSet } };
-        var secondSet = CreateCompletedSet(_player2);
-
-        // Act
-        var result = _scorer.AddSet(matchWithOneSet, secondSet);
-
-        // Assert
-        result.Sets.Should().HaveCount(2);
-        result.Winner.Should().BeNull(); // 1-1 in sets, need third set
-    }
-
-    [Fact]
-    public void AddSet_ThirdSet_WinsMatch()
-    {
-        // Arrange - Sets are 1-1, Player 1 wins third set
-        var sets = new List<TennisSet>
-        {
-            CreateCompletedSet(_player1),
-            CreateCompletedSet(_player2)
-        };
-        var matchWithTwoSets = _initialMatch with { Sets = sets };
-        var thirdSet = CreateCompletedSet(_player1);
-
-        // Act
-        var result = _scorer.AddSet(matchWithTwoSets, thirdSet);
-
-        // Assert
-        result.Sets.Should().HaveCount(3);
-        result.Winner.Should().Be(_player1);
-        result.HasWinner.Should().BeTrue();
-    }
-
-    [Fact]
-    public void DetermineMatchWinner_OnlyOneSet_ReturnsNull()
-    {
-        // Arrange - Player 1 has won 1 set
-        var sets = new List<TennisSet> { CreateCompletedSet(_player1) };
-        var match = _initialMatch with { Sets = sets };
-
-        // Act
-        var winner = _scorer.DetermineMatchWinner(match);
-
-        // Assert
-        winner.Should().BeNull();
-    }
-
-    [Fact]
-    public void DetermineMatchWinner_TwoSets_ReturnsWinner()
-    {
-        // Arrange - Player 1 has won 2 sets
+        // Arrange - Player 1 wins 2 sets
         var sets = new List<TennisSet>
         {
             CreateCompletedSet(_player1),
             CreateCompletedSet(_player1)
         };
-        var match = _initialMatch with { Sets = sets };
 
         // Act
-        var winner = _scorer.DetermineMatchWinner(match);
+        var match = _scorer.ConvertSets("TEST01", new[] { _player1, _player2 }, sets);
 
         // Assert
-        winner.Should().Be(_player1);
+        match.MatchId.Should().Be("TEST01");
+        match.Players.Should().BeEquivalentTo(new[] { _player1, _player2 });
+        match.Sets.Should().HaveCount(2);
+        match.Winner.Should().Be(_player1);
+        match.HasWinner.Should().BeTrue();
     }
 
     [Fact]
-    public void DetermineMatchWinner_BestOfThree_ReturnsCorrectWinner()
+    public void ConvertSets_OnlyOneSet_NoWinner()
+    {
+        // Arrange - Player 1 wins 1 set
+        var sets = new List<TennisSet>
+        {
+            CreateCompletedSet(_player1)
+        };
+
+        // Act
+        var match = _scorer.ConvertSets("TEST02", new[] { _player1, _player2 }, sets);
+
+        // Assert
+        match.MatchId.Should().Be("TEST02");
+        match.Sets.Should().ContainSingle();
+        match.Winner.Should().BeNull();
+        match.HasWinner.Should().BeFalse();
+    }
+
+    [Fact]
+    public void ConvertSets_BestOfThreeMatch_Player2Wins()
     {
         // Arrange - Player 2 wins 2-1 (Player 1, Player 2, Player 2)
         var sets = new List<TennisSet>
@@ -137,28 +67,96 @@ public class StandardMatchScorerTests
             CreateCompletedSet(_player2),
             CreateCompletedSet(_player2)
         };
-        var match = _initialMatch with { Sets = sets };
 
         // Act
-        var winner = _scorer.DetermineMatchWinner(match);
+        var match = _scorer.ConvertSets("TEST03", new[] { _player1, _player2 }, sets);
 
         // Assert
-        winner.Should().Be(_player2);
+        match.Sets.Should().HaveCount(3);
+        match.Winner.Should().Be(_player2);
+        match.HasWinner.Should().BeTrue();
     }
 
     [Fact]
-    public void StartNewSet_CreatesNewSetWithEmptyGames()
+    public void ConvertSets_AlternatingSets_NoWinnerYet()
     {
+        // Arrange - 1-1 in sets
+        var sets = new List<TennisSet>
+        {
+            CreateCompletedSet(_player1),
+            CreateCompletedSet(_player2)
+        };
+
         // Act
-        var result = _scorer.StartNewSet(_initialMatch, new[] { _player1, _player2 });
+        var match = _scorer.ConvertSets("TEST04", new[] { _player1, _player2 }, sets);
 
         // Assert
-        result.CurrentSet.Should().NotBeNull();
-        result.CurrentSet!.Players[0].Should().Be(_player1);
-        result.CurrentSet.Players[1].Should().Be(_player2);
-        result.CurrentSet.Games.Should().BeEmpty();
-        result.CurrentSet.Winner.Should().BeNull();
-        result.CurrentSet.CurrentGame.Should().BeNull();
+        match.Sets.Should().HaveCount(2);
+        match.Winner.Should().BeNull(); // Need 2 sets to win, currently 1-1
+        match.HasWinner.Should().BeFalse();
+    }
+
+    [Fact]
+    public void ConvertSets_EmptySets_NoWinner()
+    {
+        // Arrange
+        var sets = new List<TennisSet>();
+
+        // Act
+        var match = _scorer.ConvertSets("TEST05", new[] { _player1, _player2 }, sets);
+
+        // Assert
+        match.Sets.Should().BeEmpty();
+        match.Winner.Should().BeNull();
+        match.HasWinner.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(2, 0)] // 2-0
+    [InlineData(2, 1)] // 2-1
+    public void ConvertSets_Player1WinsTwoSets_Player1Wins(int player1Sets, int player2Sets)
+    {
+        // Arrange
+        var sets = new List<TennisSet>();
+        for (int i = 0; i < player1Sets; i++)
+        {
+            sets.Add(CreateCompletedSet(_player1));
+        }
+        for (int i = 0; i < player2Sets; i++)
+        {
+            sets.Add(CreateCompletedSet(_player2));
+        }
+
+        // Act
+        var match = _scorer.ConvertSets("TEST06", new[] { _player1, _player2 }, sets);
+
+        // Assert
+        match.Winner.Should().Be(_player1);
+        match.HasWinner.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(0, 2)] // 0-2
+    [InlineData(1, 2)] // 1-2
+    public void ConvertSets_Player2WinsTwoSets_Player2Wins(int player1Sets, int player2Sets)
+    {
+        // Arrange
+        var sets = new List<TennisSet>();
+        for (int i = 0; i < player1Sets; i++)
+        {
+            sets.Add(CreateCompletedSet(_player1));
+        }
+        for (int i = 0; i < player2Sets; i++)
+        {
+            sets.Add(CreateCompletedSet(_player2));
+        }
+
+        // Act
+        var match = _scorer.ConvertSets("TEST07", new[] { _player1, _player2 }, sets);
+
+        // Assert
+        match.Winner.Should().Be(_player2);
+        match.HasWinner.Should().BeTrue();
     }
 
     private TennisSet CreateCompletedSet(TennisPlayer winner)

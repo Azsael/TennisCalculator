@@ -50,7 +50,7 @@ public class UserInputHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NoCommandFound_ReturnsNullAndLogsWarning()
+    public async Task Handle_NoCommandFound_ReturnsHelpMessageAndLogsWarning()
     {
         // Arrange
         var input = "Unknown Command";
@@ -64,7 +64,12 @@ public class UserInputHandlerTests
         var result = await _handler.Handle(input);
 
         // Assert
-        result.Should().BeNull();
+        result.Should().NotBeNull();
+        result.Should().Contain("Error: Unrecognised command");
+        result.Should().Contain("Available commands:");
+        result.Should().Contain("Score Match <id>");
+        result.Should().Contain("Games Player <name>");
+        result.Should().Contain("quit");
         
         // Verify warning was logged
         _mockLogger.Verify(
@@ -100,7 +105,7 @@ public class UserInputHandlerTests
     }
 
     [Fact]
-    public async Task Handle_EmptyInput_HandlesGracefully()
+    public async Task Handle_EmptyInput_ReturnsHelpMessage()
     {
         // Arrange
         var input = "";
@@ -114,7 +119,9 @@ public class UserInputHandlerTests
         var result = await _handler.Handle(input);
 
         // Assert
-        result.Should().BeNull();
+        result.Should().NotBeNull();
+        result.Should().Contain("Error: Unrecognised command");
+        result.Should().Contain("Available commands:");
     }
 
     [Fact]

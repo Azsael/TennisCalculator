@@ -2,44 +2,45 @@ using TennisCalculator.Domain;
 
 namespace TennisCalculator.Processing.Scoring;
 
+/// <summary>
+/// Provides tennis set scoring functionality using simplified rules (first to 6 games wins)
+/// </summary>
 internal class StandardSetScorer : ISetScorer
 {
-    public TennisSet AddGame(TennisSet set, TennisGame completedGame)
+    private const int GamesToWinSet = 6;
+
+    public IEnumerable<TennisSet> ConvertGames(IEnumerable<TennisGame> games)
     {
-        var newGames = set.Games.Append(completedGame).ToList();
-        var newSet = set with { Games = newGames, CurrentGame = null };
-        var winner = DetermineSetWinner(newSet);
-        
-        return newSet with { Winner = winner };
-    }
-    
-    public TennisPlayer? DetermineSetWinner(TennisSet set)
-    {
-        var gamesWon = set.Players.ToDictionary(p => p, p => 
-            set.Games.Count(g => g.HasWinner && g.Winner!.Equals(p)));
-        
-        // First to 6 games wins (simplified rules)
-        foreach (var player in set.Players)
+        var gameHistory = new List<TennisGame>();
+
+        foreach (var game in games)
         {
-            if (gamesWon[player] >= 6)
+            gameHistory.Add(game);
+
+            var winner = gameHistory.GroupBy(g => g.Winner).Where(x => x.Count() >= GamesToWinSet).Select(x => x.Key).FirstOrDefault();
+
+            if (winner is not null)
             {
-                return player;
+                yield return new TennisSet
+                {
+                    Players = game.Players,
+                    Games = [.. gameHistory],
+                    Winner = winner
+                };
+                // Reset for next set
+                gameHistory.Clear();
             }
         }
-        
-        return null; // No winner yet
-    }
-    
-    public TennisSet StartNewGame(TennisSet set, IReadOnlyList<TennisPlayer> players)
-    {
-        var initialScore = players.ToDictionary(p => p, _ => TennisPoint.Love);
-        var newGame = new TennisGame
+
+        // an unfinished set
+        if (gameHistory.Count > 0)
         {
-            Players = players,
-            PointHistory = new List<TennisPlayer>(),
-            CurrentScore = initialScore
-        };
-        
-        return set with { CurrentGame = newGame };
+            yield return new TennisSet
+            {
+                Players = gameHistory[0].Players,
+                Games = [.. gameHistory],
+                Winner = null
+            };
+        }
     }
 }

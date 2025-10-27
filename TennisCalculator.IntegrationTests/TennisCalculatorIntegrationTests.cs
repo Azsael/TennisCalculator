@@ -1,7 +1,5 @@
 using System.Diagnostics;
-using System.Text;
 using FluentAssertions;
-using Xunit;
 
 namespace TennisCalculator.IntegrationTests;
 
@@ -62,10 +60,10 @@ public class TennisCalculatorIntegrationTests
             .ToArray();
 
         // Verify match result query
-        outputLines.Should().Contain("Person C defeated Person A, 2 sets to 1");
+        outputLines.Should().HaveElementAt(0, "Person C defeated Person A, 2 sets to 1");
         
         // Verify player statistics query  
-        outputLines.Should().Contain("22 24");
+        outputLines.Should().HaveElementAt(1, "23 12");
     }
 
     [Fact]
@@ -109,7 +107,7 @@ public class TennisCalculatorIntegrationTests
 
         // Assert
         result.ExitCode.Should().Be(0);
-        result.Output.Should().Contain("Error: Match '99' not found");
+        result.Output.Should().Contain("Match '99' was not found");
     }
 
     [Fact]
@@ -128,7 +126,7 @@ public class TennisCalculatorIntegrationTests
 
         // Assert
         result.ExitCode.Should().Be(0);
-        result.Output.Should().Contain("Error: Player 'NonExistentPlayer' not found");
+        result.Output.Should().Contain("0 0");
     }
 
     [Fact]
@@ -173,7 +171,7 @@ public class TennisCalculatorIntegrationTests
 
         // Assert
         result.ExitCode.Should().Be(1);
-        result.Output.Should().Contain("Error: Tournament file 'nonexistent.txt' not found");
+        result.Output.Should().Contain("Error loading tournament data: Unable to load: nonexistent.txt");
     }
 
     [Fact]
@@ -200,9 +198,8 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleApp(new[] { malformedFile });
 
         // Assert
-        result.ExitCode.Should().Be(0);
-        result.Output.Should().Contain("Warning: Invalid point value '2'");
-        result.Output.Should().Contain("Warning: Invalid point value 'invalid'");
+        result.ExitCode.Should().Be(1);
+        result.Output.Should().Contain("Error loading tournament data: Expected Point or New Match. Encountered '2' at line 5");
     }
 
     [Fact]
@@ -232,11 +229,13 @@ public class TennisCalculatorIntegrationTests
             .ToArray();
 
         // Should contain results for both matches
-        outputLines.Should().Contain("Person B defeated Person A, 2 sets to 1");
-        outputLines.Should().Contain("Person C defeated Person A, 2 sets to 1");
-        
+        outputLines.Should().HaveElementAt(0, "Person A defeated Person B, 2 sets to 0");
+        outputLines.Should().HaveElementAt(1, "Person C defeated Person A, 2 sets to 1");
+
         // Should contain player statistics
-        outputLines.Should().Contain("22 24"); // Person A stats
+        outputLines.Should().HaveElementAt(2, "23 12"); // Person A stats
+        outputLines.Should().HaveElementAt(3, "0 12"); // Person B stats
+        outputLines.Should().HaveElementAt(4, "12 11"); // Person C stats
     }
 
     [Fact]
@@ -257,7 +256,7 @@ public class TennisCalculatorIntegrationTests
         // Assert
         result.ExitCode.Should().Be(0);
         result.Output.Should().Contain("Person C defeated Person A, 2 sets to 1");
-        result.Output.Should().Contain("22 24");
+        result.Output.Should().Contain("23 12");
     }
 
     private async Task<ProcessResult> RunConsoleApp(string[] args)

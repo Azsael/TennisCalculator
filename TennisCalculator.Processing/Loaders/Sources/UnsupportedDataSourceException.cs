@@ -18,7 +18,7 @@ public class UnsupportedDataSourceException : Exception
     /// <param name="source">The data source that is not supported</param>
     [SetsRequiredMembers]
     public UnsupportedDataSourceException(string source) 
-        : base($"No data loader available for source: {source}")
+        : base($"Unable to load: {source}")
     {
         DataSource = source;
     }

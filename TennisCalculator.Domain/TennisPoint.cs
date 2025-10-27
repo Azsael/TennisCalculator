@@ -6,5 +6,6 @@ public enum TennisPoint
     Fifteen = 15,
     Thirty = 30,
     Forty = 40,
-    Advantage = 50
+    Advantage = 50,
+    Game = 60
 }
