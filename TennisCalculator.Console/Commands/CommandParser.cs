@@ -1,24 +1,23 @@
 using System.Text.RegularExpressions;
-using TennisCalculator.GamePlay;
 
 namespace TennisCalculator.Console.Commands;
 
 /// <summary>
-/// Parses user input commands into query objects
+/// Parses user input into command objects with support for extensible command patterns
 /// </summary>
-public class QueryParser : IQueryParser
+public class CommandParser : ICommandParser
 {
     private static readonly Regex ScoreMatchPattern = new(@"^Score\s+Match\s+(.+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex GamesPlayerPattern = new(@"^Games\s+Player\s+(.+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex QuitPattern = new(@"^quit$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <summary>
-    /// Parses a user input string into a query object
+    /// Parses a user input string into a command object
     /// </summary>
     /// <param name="input">The user input string</param>
-    /// <returns>A query object representing the parsed command</returns>
-    /// <exception cref="InvalidQueryException">Thrown when the input cannot be parsed</exception>
-    public IQuery ParseQuery(string input)
+    /// <returns>A command object representing the parsed input</returns>
+    /// <exception cref="InvalidCommandException">Thrown when the input cannot be parsed</exception>
+    public ICommand ParseCommand(string input)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(input);
 
@@ -27,7 +26,7 @@ public class QueryParser : IQueryParser
         // Check for quit command
         if (QuitPattern.IsMatch(trimmedInput))
         {
-            return new QuitQuery();
+            return new QuitCommand();
         }
 
         // Check for Score Match command
@@ -37,9 +36,9 @@ public class QueryParser : IQueryParser
             var matchId = scoreMatch.Groups[1].Value.Trim();
             if (string.IsNullOrWhiteSpace(matchId))
             {
-                throw new InvalidQueryException("Error: Match ID cannot be empty");
+                throw new InvalidCommandException("Error: Match ID cannot be empty");
             }
-            return new ScoreMatchQueryWrapper(new ScoreMatchQuery { MatchId = matchId });
+            return new ScoreMatchCommand(new ScoreMatchQuery { MatchId = matchId });
         }
 
         // Check for Games Player command
@@ -49,44 +48,44 @@ public class QueryParser : IQueryParser
             var playerName = gamesPlayer.Groups[1].Value.Trim();
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                throw new InvalidQueryException("Error: Player name cannot be empty");
+                throw new InvalidCommandException("Error: Player name cannot be empty");
             }
-            return new GamesPlayerQueryWrapper(new GamesPlayerQuery { PlayerName = playerName });
+            return new GamesPlayerCommand(new GamesPlayerQuery { PlayerName = playerName });
         }
 
         // No pattern matched
-        throw new InvalidQueryException("Error: Unrecognised command");
+        throw new InvalidCommandException("Error: Unrecognised command");
     }
 }
 
 /// <summary>
-/// Base interface for all query types
+/// Base interface for all command types
 /// </summary>
-public interface IQuery
+public interface ICommand
 {
 }
 
 /// <summary>
-/// Query representing a quit command
+/// Command representing a quit request
 /// </summary>
-public record QuitQuery : IQuery;
+public record QuitCommand : ICommand;
 
 /// <summary>
-/// Wrapper for ScoreMatchQuery to implement IQuery
+/// Command for retrieving match score information
 /// </summary>
-public record ScoreMatchQueryWrapper(ScoreMatchQuery Query) : IQuery;
+public record ScoreMatchCommand(ScoreMatchQuery Query) : ICommand;
 
 /// <summary>
-/// Wrapper for GamesPlayerQuery to implement IQuery
+/// Command for retrieving player game statistics
 /// </summary>
-public record GamesPlayerQueryWrapper(GamesPlayerQuery Query) : IQuery;
+public record GamesPlayerCommand(GamesPlayerQuery Query) : ICommand;
 
 /// <summary>
-/// Exception thrown when a query cannot be parsed
+/// Exception thrown when a command cannot be parsed
 /// </summary>
-public class InvalidQueryException : Exception
+public class InvalidCommandException : Exception
 {
-    public InvalidQueryException(string message) : base(message)
+    public InvalidCommandException(string message) : base(message)
     {
     }
 }

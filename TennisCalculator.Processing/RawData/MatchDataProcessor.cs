@@ -1,5 +1,4 @@
-﻿using TennisCalculator.Processing.Data;
-using TennisCalculator.Processing.Scoring;
+﻿using TennisCalculator.Processing.Scoring;
 using TennisCalculator.Domain;
 
 namespace TennisCalculator.Processing.RawData;

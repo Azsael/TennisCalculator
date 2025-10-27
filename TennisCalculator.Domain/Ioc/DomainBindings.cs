@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TennisCalculator.Domain.DataAccess;
 
-namespace TennisCalculator.DataAccess.Ioc;
+namespace TennisCalculator.Domain.Ioc;
 
 public static class DomainBindings
 {

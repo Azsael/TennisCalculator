@@ -16,7 +16,7 @@ internal class TennisDataFileLoader : ITennisDataLoader
     {
         if (!CanHandle(source))
         {
-            throw new TennisDataSourceException($"Tournament file '{source}' not found or cannot be accessed", source);
+            throw new TennisDataSourceException($"Tournament file '{source}' not found or cannot be accessed");
         }
 
         using var reader = new StreamReader(source);

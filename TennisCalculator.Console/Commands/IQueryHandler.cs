@@ -1,4 +1,4 @@
-namespace TennisCalculator.GamePlay;
+namespace TennisCalculator.Console.Commands;
 
 /// <summary>
 /// Generic interface for handling queries

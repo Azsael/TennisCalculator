@@ -1,7 +1,6 @@
 using TennisCalculator.Processing.Loaders;
 using TennisCalculator.Processing.RawData;
 using TennisCalculator.Domain;
-using TennisCalculator.Domain.DataAccess;
 
 namespace TennisCalculator.Processing.Processor;
 

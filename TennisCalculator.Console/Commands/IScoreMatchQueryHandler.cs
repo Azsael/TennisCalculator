@@ -1,4 +1,4 @@
-namespace TennisCalculator.GamePlay;
+namespace TennisCalculator.Console.Commands;
 
 /// <summary>
 /// Interface for handling score match queries

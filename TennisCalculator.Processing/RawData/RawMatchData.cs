@@ -1,4 +1,4 @@
-namespace TennisCalculator.Processing.Data;
+namespace TennisCalculator.Processing.RawData;
 
 /// <summary>
 /// Raw match data parsed from tournament data source before domain processing
@@ -23,5 +23,5 @@ public record RawMatchData
     /// <summary>
     /// Sequence of points where 0 = Player1 wins point, 1 = Player2 wins point
     /// </summary>
-    public required IReadOnlyList<int> Points { get; init; }
+    public required IList<int> Points { get; init; }
 }

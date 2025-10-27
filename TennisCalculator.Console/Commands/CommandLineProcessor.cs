@@ -1,13 +1,12 @@
-using TennisCalculator.GamePlay;
 using TennisCalculator.Domain;
 
 namespace TennisCalculator.Console.Commands;
 
 /// <summary>
-/// Handles interactive command-line interaction for processing user queries
+/// Handles interactive command-line interaction for processing user commands
 /// </summary>
 internal class CommandLineProcessor(
-    IQueryParser queryParser,
+    ICommandParser commandParser,
     IScoreMatchQueryHandler scoreMatchQueryHandler,
     IGamesPlayerQueryHandler gamesPlayerQueryHandler
 ) : ICommandLineProcessor
@@ -75,24 +74,24 @@ internal class CommandLineProcessor(
     {
         try
         {
-            var query = queryParser.ParseQuery(input);
+            var command = commandParser.ParseCommand(input);
 
-            if (query is QuitQuery)
+            if (command is QuitCommand)
             {
                 return true;
             }
 
-            var result = query switch
+            var result = command switch
             {
-                ScoreMatchQueryWrapper scoreWrapper => scoreMatchQueryHandler.Handle(scoreWrapper.Query),
-                GamesPlayerQueryWrapper gamesWrapper => gamesPlayerQueryHandler.Handle(gamesWrapper.Query),
+                ScoreMatchCommand scoreCommand => scoreMatchQueryHandler.Handle(scoreCommand.Query),
+                GamesPlayerCommand gamesCommand => gamesPlayerQueryHandler.Handle(gamesCommand.Query),
                 _ => "Error: Unrecognised command"
             };
 
             System.Console.WriteLine(result);
             return false;
         }
-        catch (InvalidQueryException ex)
+        catch (InvalidCommandException ex)
         {
             System.Console.WriteLine(ex.Message);
             DisplayHelp();

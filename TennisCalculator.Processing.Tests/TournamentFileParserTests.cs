@@ -1,16 +1,15 @@
 using System.Linq;
 using FluentAssertions;
-using TennisCalculator.Processing.Data;
 using TennisCalculator.Processing.Loaders;
 using TennisCalculator.Processing.RawData;
 
 namespace TennisCalculator.Processing.Tests;
 
-public class ITennisDataParserTests
+public class TennisDataParserTests
 {
-    private readonly ITennisDataParser _parser;
+    private readonly TennisDataParser _parser;
 
-    public ITennisDataParserTests()
+    public TennisDataParserTests()
     {
         _parser = new TennisDataParser();
     }
@@ -75,12 +74,12 @@ public class ITennisDataParserTests
         results[0].MatchId.Should().Be("01");
         results[0].Player1Name.Should().Be("Player A");
         results[0].Player2Name.Should().Be("Player B");
-        results[0].Points.Should().Equal(new[] { 0, 1 });
+        results[0].Points.Should().Equal([0, 1]);
         
         results[1].MatchId.Should().Be("02");
         results[1].Player1Name.Should().Be("Player C");
         results[1].Player2Name.Should().Be("Player D");
-        results[1].Points.Should().Equal(new[] { 1, 0 });
+        results[1].Points.Should().Equal([1, 0]);
     }
 
     [Fact]

@@ -146,12 +146,12 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("Error: Unrecognised command", result.Output);
-        Assert.Contains("Available commands:", result.Output);
-        Assert.Contains("Score Match <id>", result.Output);
-        Assert.Contains("Games Player <name>", result.Output);
-        Assert.Contains("quit", result.Output);
+        result.ExitCode.Should().Be(0);
+        result.Output.Should().Contain("Error: Unrecognised command");
+        result.Output.Should().Contain("Available commands:");
+        result.Output.Should().Contain("Score Match <id>");
+        result.Output.Should().Contain("Games Player <name>");
+        result.Output.Should().Contain("quit");
     }
 
     [Fact]
@@ -162,8 +162,7 @@ public class TennisCalculatorIntegrationTests
 
         // Assert
         result.ExitCode.Should().Be(1);
-        result.Output.Should().Contain("Error: Please provide a tournament file path");
-        result.Output.Should().Contain("Usage: TennisCalculator.Console <tournament-file-path>");
+        result.Output.Should().Contain("Error: Please provide a tournament data as file path or data stream");
     }
 
     [Fact]
@@ -173,8 +172,8 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleApp(new[] { "nonexistent.txt" });
 
         // Assert
-        Assert.Equal(1, result.ExitCode);
-        Assert.Contains("Error: Tournament file 'nonexistent.txt' not found", result.Output);
+        result.ExitCode.Should().Be(1);
+        result.Output.Should().Contain("Error: Tournament file 'nonexistent.txt' not found");
     }
 
     [Fact]
@@ -187,8 +186,8 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleApp(new[] { malformedFile });
 
         // Assert
-        Assert.Equal(1, result.ExitCode);
-        Assert.Contains("Error loading tournament data", result.Output);
+        result.ExitCode.Should().Be(1);
+        result.Output.Should().Contain("Error loading tournament data");
     }
 
     [Fact]
@@ -201,9 +200,9 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleApp(new[] { malformedFile });
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("Warning: Invalid point value '2'", result.Output);
-        Assert.Contains("Warning: Invalid point value 'invalid'", result.Output);
+        result.ExitCode.Should().Be(0);
+        result.Output.Should().Contain("Warning: Invalid point value '2'");
+        result.Output.Should().Contain("Warning: Invalid point value 'invalid'");
     }
 
     [Fact]
@@ -225,7 +224,7 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
+        result.ExitCode.Should().Be(0);
         
         var outputLines = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries)
             .Select(line => line.Trim())
@@ -233,11 +232,11 @@ public class TennisCalculatorIntegrationTests
             .ToArray();
 
         // Should contain results for both matches
-        Assert.Contains("Person B defeated Person A, 2 sets to 1", outputLines);
-        Assert.Contains("Person C defeated Person A, 2 sets to 1", outputLines);
+        outputLines.Should().Contain("Person B defeated Person A, 2 sets to 1");
+        outputLines.Should().Contain("Person C defeated Person A, 2 sets to 1");
         
         // Should contain player statistics
-        Assert.Contains("22 24", outputLines); // Person A stats
+        outputLines.Should().Contain("22 24"); // Person A stats
     }
 
     [Fact]
@@ -256,9 +255,9 @@ public class TennisCalculatorIntegrationTests
         var result = await RunConsoleAppWithInput(tournamentFile, queries);
 
         // Assert
-        Assert.Equal(0, result.ExitCode);
-        Assert.Contains("Person C defeated Person A, 2 sets to 1", result.Output);
-        Assert.Contains("22 24", result.Output);
+        result.ExitCode.Should().Be(0);
+        result.Output.Should().Contain("Person C defeated Person A, 2 sets to 1");
+        result.Output.Should().Contain("22 24");
     }
 
     private async Task<ProcessResult> RunConsoleApp(string[] args)

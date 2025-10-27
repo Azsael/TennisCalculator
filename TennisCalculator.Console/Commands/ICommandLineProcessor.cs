@@ -1,7 +1,7 @@
 namespace TennisCalculator.Console.Commands;
 
 /// <summary>
-/// Respresents an nteractive command-line processor
+/// Represents an interactive command-line processor for handling user queries
 /// </summary>
 internal interface ICommandLineProcessor
 {

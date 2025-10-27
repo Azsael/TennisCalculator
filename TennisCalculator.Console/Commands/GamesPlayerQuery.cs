@@ -1,4 +1,4 @@
-namespace TennisCalculator.GamePlay;
+namespace TennisCalculator.Console.Commands;
 
 /// <summary>
 /// Query to retrieve game statistics for a specific player

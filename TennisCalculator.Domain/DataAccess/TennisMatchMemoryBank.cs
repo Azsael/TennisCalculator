@@ -1,4 +1,4 @@
-namespace TennisCalculator.Domain.DataAccess;
+namespace TennisCalculator.Domain;
 
 /// <summary>
 /// In-memory implementation of match repository using dictionary-based storage

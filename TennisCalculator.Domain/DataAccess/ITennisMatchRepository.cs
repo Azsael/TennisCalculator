@@ -1,4 +1,4 @@
-namespace TennisCalculator.Domain.DataAccess;
+namespace TennisCalculator.Domain;
 
 /// <summary>
 /// Repository interface for managing tennis match data

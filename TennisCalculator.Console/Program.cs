@@ -40,7 +40,7 @@ catch (TennisDataSourceException ex)
     Console.WriteLine($"Data Source processing error: {ex.Message}");
     if (ex.LineNumber.HasValue)
     {
-        Console.WriteLine($"At line {ex.LineNumber.Value} in file '{ex.FilePath}'");
+        Console.WriteLine($"At line {ex.LineNumber.Value}");
     }
     return 1;
 }

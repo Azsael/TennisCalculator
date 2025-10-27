@@ -1,6 +1,5 @@
 using FluentAssertions;
 using TennisCalculator.Domain;
-using TennisCalculator.Domain.DataAccess;
 
 namespace TennisCalculator.Domain.Tests;
 

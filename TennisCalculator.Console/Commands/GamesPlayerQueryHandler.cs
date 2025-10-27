@@ -1,7 +1,6 @@
 using TennisCalculator.Domain;
-using TennisCalculator.Domain.DataAccess;
 
-namespace TennisCalculator.GamePlay;
+namespace TennisCalculator.Console.Commands;
 
 /// <summary>
 /// Handles queries for player game statistics

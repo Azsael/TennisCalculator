@@ -1,4 +1,4 @@
-namespace TennisCalculator.GamePlay;
+namespace TennisCalculator.Console.Commands;
 
 /// <summary>
 /// Query to retrieve the score and result of a specific match
