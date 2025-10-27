@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TennisCalculator.Console.Commands;
 using TennisCalculator.Processing.Ioc;
 using TennisCalculator.Domain.Ioc;
+using TennisCalculator.Console.Input;
 
 namespace TennisCalculator.Console.Ioc;
 
@@ -26,10 +27,10 @@ public static class ConsoleBindings
     public static IServiceCollection BindConsole(this IServiceCollection services)
     {
         return services
-            .AddSingleton<ICommandParser, CommandParser>()
-            .AddSingleton<ICommandLineProcessor, CommandLineProcessor>()
-            // Register query handlers
-            .AddSingleton<IScoreMatchQueryHandler, ScoreMatchQueryHandler>()
-            .AddSingleton<IGamesPlayerQueryHandler, GamesPlayerQueryHandler>();
+            .AddSingleton<IUserInputProcessor, UserInputProcessor>()
+            .AddSingleton<IUserInputHandler, UserInputHandler>()
+            // Register user commands
+            .AddSingleton<IUserCommand, ScoreMatchCommand>()
+            .AddSingleton<IUserCommand, GamesPlayerCommand>();
     }
 }

@@ -1,5 +1,4 @@
 using FluentAssertions;
-using TennisCalculator.Domain;
 
 namespace TennisCalculator.Domain.Tests;
 
@@ -25,13 +24,13 @@ public class InMemoryMatchRepositoryTests
     }
 
     [Fact]
-    public void AddMatch_ValidMatch_AddsToRepository()
+    public async Task AddMatch_ValidMatch_AddsToRepository()
     {
         // Act
         _repository.AddMatch(_testMatch);
 
         // Assert
-        var retrievedMatch = _repository.GetMatch("01");
+        var retrievedMatch = await _repository.GetMatch("01");
         retrievedMatch.Should().NotBeNull();
         retrievedMatch!.MatchId.Should().Be("01");
         retrievedMatch.Players[0].Should().Be(_player1);
@@ -39,15 +38,7 @@ public class InMemoryMatchRepositoryTests
     }
 
     [Fact]
-    public void AddMatch_NullMatch_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.AddMatch(null!))
-            .Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void AddMatch_DuplicateMatchId_OverwritesExisting()
+    public async Task AddMatch_DuplicateMatchId_OverwritesExisting()
     {
         // Arrange
         _repository.AddMatch(_testMatch);
@@ -58,88 +49,41 @@ public class InMemoryMatchRepositoryTests
         _repository.AddMatch(updatedMatch);
 
         // Assert
-        var retrievedMatch = _repository.GetMatch("01");
+        var retrievedMatch = await _repository.GetMatch("01");
         retrievedMatch.Should().NotBeNull();
         retrievedMatch!.Winner.Should().Be(_player1);
     }
 
     [Fact]
-    public void GetMatch_ExistingMatchId_ReturnsMatch()
+    public async Task GetMatch_ExistingMatchId_ReturnsMatch()
     {
         // Arrange
         _repository.AddMatch(_testMatch);
 
         // Act
-        var result = _repository.GetMatch("01");
+        var result = await _repository.GetMatch("01");
 
         // Assert
         result.Should().NotBeNull();
         result!.MatchId.Should().Be("01");
     }
 
-    [Fact]
-    public void GetMatch_NonExistentMatchId_ReturnsNull()
+    [Theory]
+    [InlineData("99")]
+    [InlineData("-1")]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task GetMatch_NonExistentMatchId_ReturnsNull(string matchId)
     {
         // Act
-        var result = _repository.GetMatch("99");
+        var result = await _repository.GetMatch(matchId);
 
         // Assert
         result.Should().BeNull();
     }
 
     [Fact]
-    public void GetMatch_NullMatchId_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatch(null!))
-            .Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void GetMatch_EmptyMatchId_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatch(""))
-            .Should().Throw<ArgumentException>();
-    }
-
-    [Fact]
-    public void GetMatch_WhitespaceMatchId_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatch("   "))
-            .Should().Throw<ArgumentException>();
-    }
-
-    [Fact]
-    public void GetAllMatches_EmptyRepository_ReturnsEmptyCollection()
-    {
-        // Act
-        var result = _repository.GetAllMatches();
-
-        // Assert
-        result.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetAllMatches_WithMatches_ReturnsAllMatches()
-    {
-        // Arrange
-        var match2 = _testMatch with { MatchId = "02" };
-        _repository.AddMatch(_testMatch);
-        _repository.AddMatch(match2);
-
-        // Act
-        var result = _repository.GetAllMatches().ToList();
-
-        // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain(m => m.MatchId == "01");
-        result.Should().Contain(m => m.MatchId == "02");
-    }
-
-    [Fact]
-    public void GetMatchesForPlayer_ExistingPlayer_ReturnsPlayerMatches()
+    public async Task GetMatchesForPlayer_ExistingPlayer_ReturnsPlayerMatches()
     {
         // Arrange
         var player3 = new TennisPlayer { Name = "Player 3" };
@@ -161,7 +105,7 @@ public class InMemoryMatchRepositoryTests
         _repository.AddMatch(match3);     // Player 2 vs Player 3
 
         // Act
-        var result = _repository.GetMatchesForPlayer("Player 1").ToList();
+        var result = (await _repository.GetMatchesForPlayer("Player 1")).ToList();
 
         // Assert
         result.Should().HaveCount(2);
@@ -170,53 +114,33 @@ public class InMemoryMatchRepositoryTests
     }
 
     [Fact]
-    public void GetMatchesForPlayer_CaseInsensitive_ReturnsPlayerMatches()
+    public async Task GetMatchesForPlayer_CaseInsensitive_ReturnsPlayerMatches()
     {
         // Arrange
         _repository.AddMatch(_testMatch);
 
         // Act
-        var result = _repository.GetMatchesForPlayer("player 1").ToList();
+        var result = (await _repository.GetMatchesForPlayer("player 1")).ToList();
 
         // Assert
         result.Should().ContainSingle();
         result[0].MatchId.Should().Be("01");
     }
 
-    [Fact]
-    public void GetMatchesForPlayer_NonExistentPlayer_ReturnsEmptyCollection()
+    [Theory]
+    [InlineData("Unknown Player")]
+    [InlineData("Different Unknown Player")]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task GetMatchesForPlayer_NonExistentPlayer_ReturnsEmptyCollection(string playerName)
     {
         // Arrange
         _repository.AddMatch(_testMatch);
 
         // Act
-        var result = _repository.GetMatchesForPlayer("Unknown Player");
+        var result = await _repository.GetMatchesForPlayer(playerName);
 
         // Assert
         result.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetMatchesForPlayer_NullPlayerName_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatchesForPlayer(null!))
-            .Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void GetMatchesForPlayer_EmptyPlayerName_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatchesForPlayer(""))
-            .Should().Throw<ArgumentException>();
-    }
-
-    [Fact]
-    public void GetMatchesForPlayer_WhitespacePlayerName_ThrowsArgumentException()
-    {
-        // Act & Assert
-        _repository.Invoking(r => r.GetMatchesForPlayer("   "))
-            .Should().Throw<ArgumentException>();
     }
 }

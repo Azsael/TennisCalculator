@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TennisCalculator.Domain;
 
 public record TennisSet
@@ -6,6 +8,7 @@ public record TennisSet
     public required IReadOnlyList<TennisGame> Games { get; init; }
     public TennisGame? CurrentGame { get; init; }
     public TennisPlayer? Winner { get; init; }
-    
+
+    [MemberNotNullWhen(true, nameof(Winner))]
     public bool HasWinner => Winner is not null;
 }

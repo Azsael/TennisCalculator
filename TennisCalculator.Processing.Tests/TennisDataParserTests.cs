@@ -15,7 +15,7 @@ public class TennisDataParserTests
     }
 
     [Fact]
-    public async Task ParseTournamentFileAsync_ValidSingleMatch_ReturnsMatchData()
+    public async Task ParseMatchData_ValidSingleMatch_ReturnsMatchData()
     {
         // Arrange
         var lines = new[]
@@ -45,7 +45,7 @@ public class TennisDataParserTests
     }
 
     [Fact]
-    public async Task ParseTournamentFileAsync_MultipleMatches_ReturnsAllMatches()
+    public async Task ParseMatchData_MultipleMatches_ReturnsAllMatches()
     {
         // Arrange
         var lines = new[]
@@ -83,7 +83,7 @@ public class TennisDataParserTests
     }
 
     [Fact]
-    public async Task ParseTournamentFileAsync_EmptyMatchId_ThrowsFileProcessingException()
+    public async Task ParseMatchData_EmptyMatchId_ThrowsTennisDataSourceException()
     {
         // Arrange
         var lines = new[]
@@ -107,7 +107,7 @@ public class TennisDataParserTests
     }
 
     [Fact]
-    public async Task ParseTournamentFileAsync_InvalidPlayerFormat_ThrowsFileProcessingException()
+    public async Task ParseMatchData_InvalidPlayerFormat_ThrowsTennisDataSourceException()
     {
         // Arrange
         var lines = new[]
@@ -126,12 +126,12 @@ public class TennisDataParserTests
         };
         
         var exception = await act.Should().ThrowAsync<TennisDataSourceException>();
-        exception.Which.Message.Should().Contain("Expected '<Player1> vs <Player2>'");
+        exception.Which.Message.Should().Contain("Expected Player Header. Encountered 'Player A versus Player B' at line 2");
         exception.Which.LineNumber.Should().Be(2);
     }
 
     [Fact]
-    public async Task ParseTournamentFileAsync_InvalidPointValues_SkipsInvalidPoints()
+    public async Task ParseMatchData_InvalidPointValues_ThrowsTennisDataSourceException()
     {
         // Arrange
         var lines = new[]
@@ -145,16 +145,17 @@ public class TennisDataParserTests
             "0"
         }.ToAsyncEnumerable();
 
-        // Act
-        var results = new List<RawMatchData>();
-        await foreach (var matchData in _parser.ParseMatchData(lines))
+        // Act & Assert
+        var act = async () =>
         {
-            results.Add(matchData);
-        }
+            await foreach (var matchData in _parser.ParseMatchData(lines))
+            {
+                // Consume the enumerable
+            }
+        };
 
-        // Assert
-        results.Should().ContainSingle();
-        var matchResult = results[0];
-        matchResult.Points.Should().Equal(new[] { 0, 1, 0 }); // Invalid points should be skipped
+        var exception = await act.Should().ThrowAsync<TennisDataSourceException>();
+        exception.Which.Message.Should().Contain("Expected Point or New Match. Encountered '2' at line 4");
+        exception.Which.LineNumber.Should().Be(4);
     }
 }

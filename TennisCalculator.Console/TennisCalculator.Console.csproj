@@ -9,8 +9,17 @@
     <WarningsNotAsErrors>612,618,CS9042</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <ProjectReference Include="..\TennisCalculator.Processing\TennisCalculator.Processing.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 </Project>
